@@ -1,0 +1,7 @@
+master:
+  push:
+    - docker:
+        image: golang:latest
+      stages:
+        - name: 构建
+          script: go build main.go
