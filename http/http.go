@@ -9,6 +9,7 @@ import (
 	"opChat/database"
 	"opChat/errcode"
 	"opChat/global"
+	"opChat/response"
 	"strconv"
 	"strings"
 	"time"
@@ -16,7 +17,7 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-func Register[req any, res any](path string, userCheck bool, action func(uid int, request *req, context context.Context) (*res, *errcode.Error)) {
+func Register[req any, res any](path string, userCheck bool, action func(uid int, request *req, ctx context.Context) (*response.Response[res], *errcode.Error)) {
 	global.App.Post(path, func(c iris.Context) {
 		key := ""
 		userAgentFromClient := c.GetHeader("User-Agent")
@@ -32,7 +33,7 @@ func Register[req any, res any](path string, userCheck bool, action func(uid int
 			errorResponse(&c, errcode.TypeConventFail.WithDetail(err.Error()), key)
 		}
 		if userCheck {
-			result, e := database.UserDatabase.FindUserByID(c.Request().Context(), intID)
+			result, e := database.UserDatabase.FindByID(uint(intID), c.Request().Context())
 			if e != nil {
 				errorResponse(&c, errcode.NoUserFound, key)
 				return
@@ -41,10 +42,10 @@ func Register[req any, res any](path string, userCheck bool, action func(uid int
 		}
 		t := (time.Now().Unix() / 100) - 1
 		path := c.Path()
-		except := fmt.Sprintf("%x", md5.Sum([]byte(path)))
+		except := md5.Sum([]byte(path))
 		for i := 0; i < 3; i++ {
 			try := encrypt(ua, []byte(baseKey+fmt.Sprint(t+int64(i))))
-			if string(try) == except {
+			if compare(try, except) {
 				key = baseKey + fmt.Sprint(t+int64(i))
 				break
 			}
@@ -65,7 +66,7 @@ func Register[req any, res any](path string, userCheck bool, action func(uid int
 			errorResponse(&c, errcode.JsonFormatError, key)
 			return
 		}
-		err = global.Validator.Struct(unm)
+		err = global.Validator.Struct(&unm)
 		if err != nil {
 			errorResponse(&c, errcode.ValidatorError, key)
 			return
@@ -75,11 +76,14 @@ func Register[req any, res any](path string, userCheck bool, action func(uid int
 			errorResponse(&c, e, key)
 			return
 		}
-		response(&c, res, key)
+		successResponse(&c, res, key)
 	})
 }
 
 func encrypt(data, key []byte) []byte {
+	if len(key) == 0 || len(data) == 0 {
+		return data
+	}
 	d := make([]byte, len(data))
 	copy(d, data)
 	md5Key := md5.Sum(key)
@@ -96,24 +100,37 @@ func encrypt(data, key []byte) []byte {
 
 func errorResponse(c *iris.Context, err *errcode.Error, key string) {
 	(*c).StatusCode(err.HttpCode)
-	if err.HttpCode == 503 {
-		return
-	}
-	if err.Detail != nil {
-		global.Log.Error("response", err)
-	}
 	var result []byte
-	if err.HttpCode == 502 {
-		result = []byte(err.String())
+	if err.HttpCode == 400 {
+		result = []byte(fmt.Sprintf("{\"code\":%d,\"message\":\"%s\",\"data\":{}}", err.Code, err.Message))
 	} else {
-		result = encrypt([]byte(err.String()), []byte(key))
+		if err.HttpCode == 501 {
+			result = []byte(fmt.Sprintf("{\"code\":%d,\"message\":\"\",\"data\":{}}", err.Code))
+		}
 	}
-	_, _ = (*c).Write(result)
+	global.Log.Info("err_response", err)
+	_, _ = (*c).Write(encrypt(result, []byte(key)))
 }
 
-func response(c *iris.Context, response any, key string) {
-	marshal, _ := json.Marshal(response)
-	marshal = encrypt(marshal, []byte(key))
+func successResponse(c *iris.Context, response any, key string) {
+	marshal, err := json.Marshal(response)
+	if err != nil {
+		errorResponse(c, errcode.JsonFormatError.WithDetail(err.Error()), key)
+		return
+	}
 	(*c).StatusCode(200)
-	_, _ = (*c).Write(marshal)
+	global.Log.Info("success_response", marshal)
+	_, _ = (*c).Write(encrypt(marshal, []byte(key)))
+}
+
+func compare(a []byte, b [16]byte) bool {
+	if len(a) != 16 {
+		return false
+	}
+	for i, v := range b {
+		if a[i] != v {
+			return false
+		}
+	}
+	return true
 }

@@ -1,7 +1,15 @@
 package entity
 
+import (
+	"gorm.io/gorm"
+)
+
 type User struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	DeviceID string `json:"deviceID"`
+	gorm.Model
+	PhoneNumber    string
+	Username       string
+	Password       string
+	DeviceID       string
+	AvatarFileName string
+	AvatarExName   string
 }

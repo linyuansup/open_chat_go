@@ -9,6 +9,6 @@ var Log *logger.Logger
 
 func initLogger() *errcode.Error {
 	var err *errcode.Error
-	Log, err = logger.NewLogger(logPath, log, true, true)
+	Log, err = logger.NewLogger(LogPath, log, true, true)
 	return err
 }

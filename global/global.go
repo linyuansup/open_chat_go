@@ -1,11 +1,8 @@
 package global
 
 import (
-	"fmt"
 	"github.com/kataras/iris/v12"
 )
-
-var port int
 
 func init() {
 	err := initDatabase()
@@ -23,5 +20,5 @@ func init() {
 }
 
 func StartServe() error {
-	return App.Run(iris.Addr(":" + fmt.Sprint(port)))
+	return App.Run(iris.Addr(":" + HttpPort))
 }

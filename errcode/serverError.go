@@ -13,4 +13,6 @@ var (
 	ValidatorError         = NewError(10000009, "请求体校验失败", 501)
 	NoPermission           = NewError(10000010, "没有权限", 501)
 	TypeConventFail        = NewError(10000011, "数据转换失败", 501)
+	FindDataError          = NewError(10000012, "查找数据错误", 501)
+	NoUserFound            = NewError(10000013, "找不到用户", 502)
 )
