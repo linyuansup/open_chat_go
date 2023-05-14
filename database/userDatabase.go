@@ -16,7 +16,7 @@ type userDatabase struct{}
 var UserDatabase userDatabase
 
 var (
-	NowUserID int32 = 100000000
+	NowUserID int32
 )
 
 func (u *userDatabase) FindByID(id uint, ctx context.Context) (*entity.User, *errcode.Error) {

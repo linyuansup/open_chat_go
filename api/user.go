@@ -16,7 +16,7 @@ var User user
 func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.Context) (*response.Response[response.UserCreateResponse], *errcode.Error) {
 	targetUser := &entity.User{
 		PhoneNumber: request.PhoneNumber,
-		Password: request.PhoneNumber,
+		Password: request.Password,
 		DeviceID: request.DeviceID,
 	}
 	e := database.UserDatabase.Add(targetUser, ctx)

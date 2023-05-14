@@ -10,7 +10,7 @@ import (
 func TestCreateUser(t *testing.T) {
 	res, err := api.User.Create(0, &request.UserCreateRequest{
 		PhoneNumber: "19556172642",
-		Password: "81A0AD68CA3E7943DB8833DC48927E2F",
+		Password: "81a0ad68ca3e7943db8833dc48927e2f",
 		DeviceID: "5wi1RhQ#JMunWu_I",
 	}, context.Background())
 	if err != nil {
