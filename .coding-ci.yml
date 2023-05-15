@@ -1,7 +1,7 @@
 main:
   push:
-    - runner:
-        cpus: 1
+    - env:
+        CODING_CPUS: 1
     - services:
         - docker
       docker:
