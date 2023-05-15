@@ -19,6 +19,7 @@ func main() {
 	initDir()
 
 	http.Register("/user/create", false, api.User.Create)
+	http.Register("/user/login", false, api.User.Login)
 
 	e := global.StartServe()
 	if e != nil {

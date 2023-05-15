@@ -51,10 +51,7 @@ func (u *userDatabase) Add(user *entity.User, ctx context.Context) *errcode.Erro
 	user.ID = uint(atomic.AddInt32(&NowUserID, 1))
 	err := global.Database.WithContext(ctx).Create(user).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errcode.NoUserFound
-		}
-		return errcode.FindDataError.WithDetail(err.Error())
+		return errcode.InsertDataError.WithDetail(err.Error())
 	}
 	return nil
 }

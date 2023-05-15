@@ -15,4 +15,5 @@ var (
 	TypeConventFail        = NewError(10000011, "数据转换失败", 501)
 	FindDataError          = NewError(10000012, "查找数据错误", 501)
 	NoUserFound            = NewError(10000013, "找不到用户", 502)
+	InsertDataError        = NewError(10000014, "添加数据错误", 501)
 )
