@@ -1,13 +1,7 @@
 main:
-  - runner:
-      cpus: 1
   push:
-    - services:
-        - docker
-      docker:
-        image: alpine
+    - runner:
+        cpus: 1
       stages:
-        - name: docker info
-          script:
-            - docker info
-            - docker ps
+        - name: echo
+          script: echo "hello world"
