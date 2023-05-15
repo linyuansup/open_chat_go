@@ -2,12 +2,12 @@ main:
   push:
     - runner:
         cpus: 1
-      - services:
-          - docker
-        docker:
-          image: alpine
-        stages:
-          - name: docker info
-            script:
-              - docker info
-              - docker ps
+    - services:
+        - docker
+      docker:
+        image: alpine
+      stages:
+        - name: docker info
+          script:
+            - docker info
+            - docker ps
