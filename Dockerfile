@@ -9,6 +9,6 @@ RUN go build
 FROM alpine as runner
 WORKDIR /
 COPY --from=builder /opChat .
-COPY --from=builder /storage .
+COPY --from=builder /storage /storage
 EXPOSE 80
-ENTRYPOINT ["ls && ./opChat"]
+ENTRYPOINT ["opChat"]
