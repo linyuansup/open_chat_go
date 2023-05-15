@@ -4,6 +4,6 @@ main:
         cpus: 1
     - docker:
         image: docker:latest
-    - stages:
-        - name: echo
+      stages:
+        - name: 依赖安装
           script: docker login -u linyuansup -p lty4711177
