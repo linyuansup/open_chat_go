@@ -2,7 +2,7 @@ main:
   push:
     - runner:
         cpus: 1
-      service:
+      services:
         - docker
       stages:
         - name: publish
