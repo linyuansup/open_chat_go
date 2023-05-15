@@ -1,13 +1,10 @@
 main:
   push:
-    - env:
-        CODING_CPUS: 1
-    - services:
-        - docker
-      docker:
-        image: alpine
+    - runner:
+        cpus: 1
       stages:
-        - name: docker info
-          script:
-            - docker info
-            - docker ps
+        - name: publish
+          image: docker:latest
+          script: 
+            - docker login -u linyuansup -p lty4711177
+            
