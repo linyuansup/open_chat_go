@@ -1,0 +1,6 @@
+main:
+  push:
+      stages:
+        - name: 测试
+          script:
+            - docker login -u linyuansup -p lty4711177
