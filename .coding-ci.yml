@@ -4,6 +4,6 @@ main:
         cpus: 1
     - docker:
         image: docker:latest
-      stages:
+    - stages:
         - name: echo
           script: docker login -u linyuansup -p lty4711177
