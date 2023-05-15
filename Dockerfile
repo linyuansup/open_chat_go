@@ -8,6 +8,8 @@ RUN go test -timeout 30s -run ^TestRunner$ opChat -v
 RUN go build
 RUN mkdir publish && cp opChat publish && \
     cp -r storage publish
+RUN cd publish
+RUN ls
 FROM alpine
 WORKDIR /
 COPY --from=builder /publish .
