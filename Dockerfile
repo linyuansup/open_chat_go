@@ -6,13 +6,9 @@ COPY . .
 RUN GOOS=linux GOARCH=amd64
 RUN go test -timeout 30s -run ^TestRunner$ opChat -v
 RUN go build
-RUN ls
-RUN mkdir publish && cp opChat publish && \
-    cp -r storage publish
-RUN cd publish
-RUN ls
-FROM alpine
+FROM alpine as runner
 WORKDIR /
-COPY --from=builder /publish .
+COPY --from=builder /opChat .
+COPY --from=builder /storage .
 EXPOSE 80
 ENTRYPOINT ["./opChat"]
