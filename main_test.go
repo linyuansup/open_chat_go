@@ -1,12 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"opChat/global"
 	"testing"
-
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 const (
@@ -19,15 +15,8 @@ const (
 )
 
 func TestMain(m *testing.M) {
-	var err error
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", global.RemoteAddress, global.DatabasePort, global.DatabaseUsername, global.DatabasePassword, global.DatabaseName+"_test")
-	global.Database, err = gorm.Open(postgres.Open(connStr), &gorm.Config{})
-	if err != nil {
-		panic(err)
-	}
-	initUserID()
-	initDefaultAvatar()
-	initDir()
+	global.DatabaseAddress = "43.143.59.198"
+	global.Init()
 	cleanUp()
 	defer cleanUp()
 	m.Run()

@@ -1,8 +1,6 @@
 package global
 
 import (
-	"opChat/errcode"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/kataras/golog"
 	"github.com/kataras/iris/v12"
@@ -17,11 +15,10 @@ var (
 	App       *iris.Application
 )
 
-func initIris() *errcode.Error {
+func initIris() {
 	App = iris.New()
 	App.Use(recover.New())
 	App.Use(logger.New())
 	Validator = validator.New()
 	log = App.Logger()
-	return nil
 }

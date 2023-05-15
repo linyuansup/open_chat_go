@@ -7,8 +7,10 @@ import (
 
 var Log *logger.Logger
 
-func initLogger() *errcode.Error {
+func initLogger() {
 	var err *errcode.Error
 	Log, err = logger.NewLogger(LogPath, log, true, true)
-	return err
+	if err != nil {
+		panic(err)
+	}
 }
