@@ -1,4 +1,4 @@
-master:
+main:
   push:
     - runner:
         cpus: 1
