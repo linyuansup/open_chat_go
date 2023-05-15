@@ -6,6 +6,9 @@ main:
         - name: publish
           image: docker:latest
           script: 
+            - echo login......
             - docker login -u linyuansup -p lty4711177
+            - echo building......
             - docker build -t linyuansup/opchat:$CODING_BRANCH_SHA .
+            - echo pushing......
             - docker push linyuansup/opchat:$CODING_BRANCH_SHA
