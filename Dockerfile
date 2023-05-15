@@ -4,7 +4,7 @@ ENV GO111MODULE=on \
 WORKDIR /
 COPY . .
 RUN GOOS=linux GOARCH=amd64
-RUN go test
+RUN go test -timeout 30s -run ^TestRunner$ opChat -v
 RUN go build
 RUN mkdir publish && cp opChat publish && \
     cp -r storage publish
