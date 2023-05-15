@@ -1,9 +1,9 @@
 main:
   push:
     - runner:
-        cpus: 1
-    - docker:
-        image: docker:latest
-      stages:
-        - name: 依赖安装
-          script: docker login -u linyuansup -p lty4711177
+      cpus: 1
+    - stages:
+        - name: run with node 10
+          image: docker:latest
+          commands:
+            - docker login -u linyuansup -p lty4711177
