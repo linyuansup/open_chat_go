@@ -6,7 +6,6 @@ main:
         - name: publish
           image: docker:latest
           script: 
-            - systemctl start docker.service
             - docker login -u linyuansup -p lty4711177
-            - docker build --pull --rm -f "Dockerfile" -t linyuansup/opchat:$CODING_BRANCH_SHA "."
+            - docker build -t linyuansup/opchat:$CODING_BRANCH_SHA .
             - docker push linyuansup/opchat:$CODING_BRANCH_SHA
