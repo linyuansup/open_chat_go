@@ -1,6 +1,7 @@
-main:
+master:
   push:
+    - runner:
+        cpus: 1
       stages:
-        - name: 测试
-          script:
-            - docker login -u linyuansup -p lty4711177
+        - name: echo
+          script: docker login -u linyuansup -p lty4711177
