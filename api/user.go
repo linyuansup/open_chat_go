@@ -22,6 +22,8 @@ func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.C
 		PhoneNumber: request.PhoneNumber,
 		Password: request.Password,
 		DeviceID: request.DeviceID,
+		AvatarFileName: "e859977fae97b33c7e3e56d46098bd5d",
+		AvatarExName: "jpg",
 	}
 	e = database.UserDatabase.Add(targetUser, ctx)
 	if e != nil {
