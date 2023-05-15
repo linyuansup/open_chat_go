@@ -1,9 +1,0 @@
-main:
-  push:
-    - runner:
-      cpus: 1
-    - stages:
-        - name: run with node 10
-          image: docker:latest
-          commands:
-            - docker login -u linyuansup -p lty4711177
