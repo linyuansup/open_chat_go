@@ -11,4 +11,4 @@ WORKDIR /
 COPY --from=builder /opChat .
 COPY --from=builder /storage .
 EXPOSE 80
-ENTRYPOINT ["./opChat"]
+ENTRYPOINT ["ls && ./opChat"]
