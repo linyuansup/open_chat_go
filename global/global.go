@@ -7,6 +7,8 @@ import (
 func Init() {
 	initDatabase()
 	initIris()
+	initDir()
+	initDefaultAvatar()
 	initLogger()
 	initUserID()
 }

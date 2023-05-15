@@ -12,5 +12,5 @@ func initDefaultAvatar() {
 
 func initDir() {
 	dir, _ := os.Getwd()
-	os.MkdirAll(dir+"/log", os.ModePerm)
+	os.MkdirAll(dir+"/storage/log", os.ModePerm)
 }
