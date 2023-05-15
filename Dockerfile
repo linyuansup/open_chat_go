@@ -9,6 +9,8 @@ RUN go build
 RUN ls
 RUN mkdir publish && cp opChat publish && \
     cp -r storage publish
+RUN cd publish
+RUN ls
 FROM alpine
 WORKDIR /
 COPY --from=builder /publish .
