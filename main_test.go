@@ -33,6 +33,11 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
+func TestRunner(t *testing.T) {
+	t.Run("TestUserCreate", TestUserCreate)
+	t.Run("TestUserLogin", TestUserLogin)
+}
+
 func cleanUp() {
 	global.Database.Exec("delete from users")
 }

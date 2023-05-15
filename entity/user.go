@@ -6,7 +6,7 @@ import (
 
 type User struct {
 	gorm.Model
-	PhoneNumber    string
+	PhoneNumber    string `gorm:"primaryKey"`
 	Username       string
 	Password       string
 	DeviceID       string
