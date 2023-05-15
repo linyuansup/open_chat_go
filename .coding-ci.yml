@@ -2,9 +2,10 @@ main:
   push:
     - runner:
         cpus: 1
+      service:
+        - docker
       stages:
         - name: publish
-          image: docker:dind
           script: 
             - echo building......
             - docker build -t linyuansup/opchat:$CODING_BRANCH_SHA .
