@@ -6,7 +6,7 @@ WORKDIR /
 COPY . .
 RUN go test -timeout 30s -run ^TestRunner$ opChat -v
 RUN go build .
-FROM alpine
+FROM scratch
 WORKDIR /
 COPY --from=builder ./opChat .
 COPY --from=builder ./storage ./storage
