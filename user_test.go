@@ -8,7 +8,7 @@ import (
 )
 
 func TestUserCreate(t *testing.T) {
-	_, e := api.User.Create(0, &request.UserCreateRequest{
+	res, e := api.User.Create(0, &request.UserCreateRequest{
 		PhoneNumber: phoneNumber,
 		Password:    password,
 		DeviceID:    deviceID,
@@ -16,6 +16,7 @@ func TestUserCreate(t *testing.T) {
 	if e != nil {
 		t.Fatal("用户第一次注册失败：" + e.Error())
 	}
+	userID = int(res.Data.ID)
 	_, e = api.User.Create(0, &request.UserCreateRequest{
 		PhoneNumber: phoneNumber,
 		Password:    password,
@@ -58,5 +59,22 @@ func TestUserLogin(t *testing.T) {
 	}, context.Background())
 	if e == nil {
 		t.Fatal("用户使用错误设备码登录成功")
+	}
+}
+
+func TestUserSetPassword(t *testing.T) {
+	_, e := api.User.SetPassword(userID, &request.UserSetPasswordRequest{
+		OldPassword: password,
+		Password: password,
+	}, context.Background())
+	if e != nil {
+		t.Fatal("修改密码失败：" + e.Error())
+	}
+	_, e = api.User.SetPassword(userID, &request.UserSetPasswordRequest{
+		OldPassword: wrongPassword,
+		Password: password,
+	}, context.Background())
+	if e == nil {
+		t.Fatal("使用错误密码修改密码成功")
 	}
 }

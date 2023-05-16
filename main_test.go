@@ -14,6 +14,10 @@ const (
 	wrongDeviceID = "5wi1RhQ#JMunWd_I"
 )
 
+var (
+	userID int
+)
+
 func TestMain(m *testing.M) {
 	global.DatabaseAddress = "43.143.59.198"
 	global.DatabaseName += "_test"
@@ -25,6 +29,7 @@ func TestMain(m *testing.M) {
 func TestRunner(t *testing.T) {
 	t.Run("TestUserCreate", TestUserCreate)
 	t.Run("TestUserLogin", TestUserLogin)
+	t.Run("TestUserSetPassword", TestUserSetPassword)
 }
 
 func cleanUp() {

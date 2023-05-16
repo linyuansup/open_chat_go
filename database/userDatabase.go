@@ -51,3 +51,11 @@ func (u *userDatabase) Add(user *entity.User, ctx context.Context) *errcode.Erro
 	}
 	return nil
 }
+
+func (u *userDatabase) Update(user *entity.User, key string, value any) *errcode.Error {
+	e := global.Database.Model(user).Update(key, value).Error
+	if e != nil {
+		return errcode.UpdateDataError.WithDetail(e.Error())
+	}
+	return nil
+}
