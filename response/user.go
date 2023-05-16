@@ -8,3 +8,5 @@ type UserLoginResponse struct {
 	ID uint `json:"id"`
 }
 
+type UserSetPasswordResponse struct {
+}

@@ -16,4 +16,5 @@ var (
 	FindDataError          = NewError(10000012, "查找数据错误", 501)
 	NoUserFound            = NewError(10000013, "找不到用户", 502)
 	InsertDataError        = NewError(10000014, "添加数据错误", 501)
+	UpdateDataError        = NewError(10000015, "更新数据错误", 501)
 )

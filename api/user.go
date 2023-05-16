@@ -60,3 +60,25 @@ func (u *user) Login(uid int, request *request.UserLoginRequest, ctx context.Con
 		},
 	}, nil
 }
+
+func (u *user) SetPassword(uid int, request *request.UserSetPasswordRequest, ctx context.Context) (*response.Response[response.UserSetPasswordResponse], *errcode.Error) {
+	targetUser, e := database.UserDatabase.FindByID(uint(uid), ctx)
+	if e != nil {
+		if e.Code == errcode.NoUserFound.Code {
+			return nil, errcode.NoTargetFound
+		}
+		return nil, e
+	}
+	if request.OldPassword != targetUser.Password {
+		return nil, errcode.WrongPassword
+	}
+	e = database.UserDatabase.Update(targetUser, "Password", request.Password)
+	if e != nil {
+		return nil, e
+	}
+	return &response.Response[response.UserSetPasswordResponse]{
+		Code: 200,
+		Message: "更改密码成功",
+		Data: &response.UserSetPasswordResponse{},
+	}, nil
+}

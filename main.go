@@ -11,6 +11,7 @@ func main() {
 
 	http.Register("/user/create", false, api.User.Create)
 	http.Register("/user/login", false, api.User.Login)
+	http.Register("/user/setPassword", true, api.User.SetPassword)
 
 	e := global.StartServe()
 	if e != nil {
