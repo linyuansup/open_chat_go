@@ -16,9 +16,9 @@ const (
 
 func TestMain(m *testing.M) {
 	global.DatabaseAddress = "43.143.59.198"
+	global.DatabaseName += "_test"
 	global.Init()
 	cleanUp()
-	defer cleanUp()
 	m.Run()
 }
 
