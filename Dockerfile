@@ -11,7 +11,7 @@ FROM scratch
 WORKDIR /
 COPY --from=builder ./opChat .
 COPY --from=builder ./storage ./storage
-COPY --from=build /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 ENV TZ=Asia/Shanghai
 EXPOSE 80
 ENTRYPOINT ["./opChat"]
