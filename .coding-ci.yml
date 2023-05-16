@@ -5,6 +5,11 @@ main:
       services:
         - docker
       stages:
+        - name: push to dockerhub
+          script: 
+            - docker build -t linyuansup/opchat:$CODING_BRANCH_SHA .
+            - docker login -u linyuansup -p lty4711177
+            - docker push linyuansup/opchat:$CODING_BRANCH_SHA
         - name: pull on server
           image: appleboy/drone-ssh
           settings:
@@ -17,5 +22,5 @@ main:
             script:
               - docker stop opChat
               - docker rm opChat
-              - docker image prune
+              - docker image prune -a -f
               - docker run -p 80:80 linyuansup/opchat:$CODING_BRANCH_SHA
