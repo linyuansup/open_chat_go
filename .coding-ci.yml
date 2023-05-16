@@ -5,19 +5,13 @@ main:
       services:
         - docker
       stages:
-        - name: push to dockerhub
-          script: 
-            - docker build -t linyuansup/opchat:$CODING_BRANCH_SHA .
-            - docker login -u linyuansup -p lty4711177
-            - docker push linyuansup/opchat:$CODING_BRANCH_SHA
         - name: pull on server
           image: appleboy/drone-ssh
           settings:
             host:
               - 43.143.59.198
             username: root
-            password:
-              from_secret: zhangyinqi114514!
+            password: zhangyinqi114514!
             port: 22
             command_timeout: 2m
             script:
