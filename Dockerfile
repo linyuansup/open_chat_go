@@ -5,10 +5,11 @@ WORKDIR /
 COPY . .
 RUN GOOS=linux GOARCH=amd64
 RUN go test -timeout 30s -run ^TestRunner$ opChat -v
-RUN go build
-FROM alpine as runner
+RUN go build .
+FROM alpine
 WORKDIR /
-COPY --from=builder /opChat .
-COPY --from=builder /storage /storage
+COPY --from=builder ./opChat .
+COPY --from=builder ./storage ./storage
+RUN ls
 EXPOSE 80
-ENTRYPOINT ["opChat"]
+ENTRYPOINT ["./opChat"]
