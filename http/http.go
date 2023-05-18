@@ -36,7 +36,7 @@ func Register[req any, res any](path string, userCheck bool, action func(uid int
 			result, e := database.Database{
 				DB:  global.Database,
 				Ctx: c.Request().Context(),
-			}.FindByID(uint(intID))
+			}.FindUserByID(uint(intID))
 			if e != nil {
 				errorResponse(&c, errcode.NoUserFound, key)
 				return
