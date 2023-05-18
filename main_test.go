@@ -6,12 +6,12 @@ import (
 )
 
 const (
-	phoneNumber = "19556172642"
+	phoneNumber      = "19556172642"
 	wrongPhoneNumber = "19556172643"
-	password = "81a0ad68ca3e7943db8833dc48927e2f"
-	wrongPassword = "81a0ad68ca3e7943db8833dc48927e2d"
-	deviceID = "5wi1RhQ#JMunWu_I"
-	wrongDeviceID = "5wi1RhQ#JMunWd_I"
+	password         = "81a0ad68ca3e7943db8833dc48927e2f"
+	wrongPassword    = "81a0ad68ca3e7943db8833dc48927e2d"
+	deviceID         = "5wi1RhQ#JMunWu_I"
+	wrongDeviceID    = "5wi1RhQ#JMunWd_I"
 )
 
 var (
@@ -30,6 +30,7 @@ func TestRunner(t *testing.T) {
 	t.Run("TestUserCreate", TestUserCreate)
 	t.Run("TestUserLogin", TestUserLogin)
 	t.Run("TestUserSetPassword", TestUserSetPassword)
+	t.Run("TestOrganGetAvatar", TestOrganGetAvatar)
 }
 
 func cleanUp() {
