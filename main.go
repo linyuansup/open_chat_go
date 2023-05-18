@@ -13,8 +13,6 @@ func main() {
 	http.Register("/user/login", false, api.User.Login)
 	http.Register("/user/setPassword", true, api.User.SetPassword)
 
-	http.Register("/organ/avatar", true, api.Organ.GetAvatar)
-
 	e := global.StartServe()
 	if e != nil {
 		panic(e)

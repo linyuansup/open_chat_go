@@ -33,7 +33,10 @@ func Register[req any, res any](path string, userCheck bool, action func(uid int
 			errorResponse(&c, errcode.TypeConventFail.WithDetail(err.Error()), key)
 		}
 		if userCheck {
-			result, e := database.UserDatabase.FindByID(uint(intID), c.Request().Context())
+			result, e := database.Database{
+				DB:  global.Database,
+				Ctx: c.Request().Context(),
+			}.FindByID(uint(intID))
 			if e != nil {
 				errorResponse(&c, errcode.NoUserFound, key)
 				return

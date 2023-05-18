@@ -17,4 +17,5 @@ var (
 	NoUserFound            = NewError(10000013, "找不到用户", 502)
 	InsertDataError        = NewError(10000014, "添加数据错误", 501)
 	UpdateDataError        = NewError(10000015, "更新数据错误", 501)
+	CommitError            = NewError(10000016, "提交事务错误", 501)
 )

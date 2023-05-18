@@ -10,7 +10,7 @@ func Init() {
 	initDir()
 	initDefaultAvatar()
 	initLogger()
-	initUserID()
+	initID()
 }
 
 func StartServe() error {

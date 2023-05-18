@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func initUserID() {
+func initID() {
 	u := entity.User{}
 	err := Database.Last(&u).Error
 	if err != nil {

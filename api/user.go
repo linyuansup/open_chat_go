@@ -5,6 +5,7 @@ import (
 	"opChat/database"
 	"opChat/entity"
 	"opChat/errcode"
+	"opChat/global"
 	"opChat/request"
 	"opChat/response"
 )
@@ -14,23 +15,35 @@ type user struct{}
 var User user
 
 func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.Context) (*response.Response[response.UserCreateResponse], *errcode.Error) {
-	_, e := database.UserDatabase.FindByPhoneNumber(request.PhoneNumber, ctx)
+	tx := global.Database.Begin()
+	d := database.Database{
+		DB:  tx,
+		Ctx: ctx,
+	}
+	_, e := d.FindByPhoneNumber(request.PhoneNumber)
 	if e == nil || e.Code != errcode.NoUserFound.Code {
+		tx.Rollback()
 		return nil, errcode.PhoneNumberAlreadyExist
 	}
 	targetUser := &entity.User{
-		PhoneNumber: request.PhoneNumber,
-		Password: request.Password,
-		DeviceID: request.DeviceID,
+		PhoneNumber:    request.PhoneNumber,
+		Password:       request.Password,
+		DeviceID:       request.DeviceID,
 		AvatarFileName: "e859977fae97b33c7e3e56d46098bd5d",
-		AvatarExName: "jpg",
+		AvatarExName:   "jpg",
 	}
-	e = database.UserDatabase.Add(targetUser, ctx)
+	e = d.Add(targetUser)
 	if e != nil {
+		tx.Rollback()
 		return nil, e
 	}
+	err := tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.CommitError.WithDetail(err.Error())
+	}
 	return &response.Response[response.UserCreateResponse]{
-		Code: 200,
+		Code:    200,
 		Message: "注册成功",
 		Data: &response.UserCreateResponse{
 			ID: targetUser.ID,
@@ -39,7 +52,10 @@ func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.C
 }
 
 func (u *user) Login(uid int, request *request.UserLoginRequest, ctx context.Context) (*response.Response[response.UserLoginResponse], *errcode.Error) {
-	targetUser, e := database.UserDatabase.FindByPhoneNumber(request.PhoneNumber,ctx)
+	targetUser, e := database.Database{
+		DB:  global.Database,
+		Ctx: ctx,
+	}.FindByPhoneNumber(request.PhoneNumber)
 	if e != nil {
 		if e.Code == errcode.NoUserFound.Code {
 			return nil, errcode.NoPhoneNumberFound
@@ -53,7 +69,7 @@ func (u *user) Login(uid int, request *request.UserLoginRequest, ctx context.Con
 		return nil, errcode.WrongDeviceID
 	}
 	return &response.Response[response.UserLoginResponse]{
-		Code: 200,
+		Code:    200,
 		Message: "登录成功",
 		Data: &response.UserLoginResponse{
 			ID: targetUser.ID,
@@ -62,23 +78,37 @@ func (u *user) Login(uid int, request *request.UserLoginRequest, ctx context.Con
 }
 
 func (u *user) SetPassword(uid int, request *request.UserSetPasswordRequest, ctx context.Context) (*response.Response[response.UserSetPasswordResponse], *errcode.Error) {
-	targetUser, e := database.UserDatabase.FindByID(uint(uid), ctx)
+	tx := global.Database.Begin()
+	d := database.Database{
+		DB:  tx,
+		Ctx: ctx,
+	}
+	targetUser, e := d.FindByID(uint(uid))
 	if e != nil {
 		if e.Code == errcode.NoUserFound.Code {
+			tx.Rollback()
 			return nil, errcode.NoTargetFound
 		}
+		tx.Rollback()
 		return nil, e
 	}
 	if request.OldPassword != targetUser.Password {
+		tx.Rollback()
 		return nil, errcode.WrongPassword
 	}
-	e = database.UserDatabase.Update(targetUser, "Password", request.Password)
+	e = d.Update(targetUser, "Password", request.Password)
 	if e != nil {
+		tx.Rollback()
 		return nil, e
 	}
+	err := tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.CommitError.WithDetail(err.Error())
+	}
 	return &response.Response[response.UserSetPasswordResponse]{
-		Code: 200,
+		Code:    200,
 		Message: "更改密码成功",
-		Data: &response.UserSetPasswordResponse{},
+		Data:    &response.UserSetPasswordResponse{},
 	}, nil
 }
