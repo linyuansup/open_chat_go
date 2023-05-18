@@ -8,7 +8,8 @@ var (
 	DatabaseUsername = "gaussdb"
 	DatabasePassword = "ZhangYinQi114514!"
 	DatabaseName     = "opChat"
-	LogPath          = "/storage/log"
+	FilePath         = "/storage"
+	LogPath          = FilePath + "/log"
 	HttpPort         = "80"
 	NowUserID        int32
 )

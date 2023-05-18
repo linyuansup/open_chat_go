@@ -16,11 +16,7 @@ type fileLog struct {
 }
 
 func newFileLog(filePath string) (*fileLog, *errcode.Error) {
-	dir, err := os.Getwd()
-	if err != nil {
-		return nil, errcode.OpenFileError.WithDetail(err.Error(), filePath)
-	}
-	filePath = dir + "/" + filePath + "/" + time.Now().Format("2006-01-02 15-04-05") + ".log"
+	filePath = "./" + filePath + "/" + time.Now().Format("2006-01-02 15-04-05") + ".log"
 	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return nil, errcode.OpenFileError.WithDetail(err.Error(), filePath)
