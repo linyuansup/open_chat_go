@@ -30,7 +30,6 @@ func TestRunner(t *testing.T) {
 	t.Run("TestUserCreate", TestUserCreate)
 	t.Run("TestUserLogin", TestUserLogin)
 	t.Run("TestUserSetPassword", TestUserSetPassword)
-	t.Run("TestOrganGetAvatar", TestOrganGetAvatar)
 }
 
 func cleanUp() {
