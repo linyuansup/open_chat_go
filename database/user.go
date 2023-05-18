@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (d Database) FindByID(id uint) (*entity.User, *errcode.Error) {
+func (d Database) FindUserByID(id uint) (*entity.User, *errcode.Error) {
 	targetUser := entity.User{
 		Model: gorm.Model{
 			ID: id,
@@ -26,7 +26,7 @@ func (d Database) FindByID(id uint) (*entity.User, *errcode.Error) {
 	return &targetUser, nil
 }
 
-func (d Database) FindByPhoneNumber(phoneNumber string) (*entity.User, *errcode.Error) {
+func (d Database) FindUserByPhoneNumber(phoneNumber string) (*entity.User, *errcode.Error) {
 	targetUser := entity.User{}
 	err := d.DB.WithContext(d.Ctx).Where("phone_number = ?", phoneNumber).Take(&targetUser).Error
 	if err != nil {
@@ -38,7 +38,7 @@ func (d Database) FindByPhoneNumber(phoneNumber string) (*entity.User, *errcode.
 	return &targetUser, nil
 }
 
-func (d Database) Add(user *entity.User) *errcode.Error {
+func (d Database) AddUser(user *entity.User) *errcode.Error {
 	user.ID = uint(atomic.AddInt32(&global.NowUserID, 1))
 	err := d.DB.WithContext(d.Ctx).Create(user).Error
 	if err != nil {
@@ -47,7 +47,7 @@ func (d Database) Add(user *entity.User) *errcode.Error {
 	return nil
 }
 
-func (d Database) Update(user *entity.User, key string, value any) *errcode.Error {
+func (d Database) UpdateUser(user *entity.User, key string, value any) *errcode.Error {
 	e := d.DB.WithContext(d.Ctx).Model(user).Update(key, value).Error
 	if e != nil {
 		return errcode.UpdateDataError.WithDetail(e.Error())

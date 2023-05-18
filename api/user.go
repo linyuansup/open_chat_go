@@ -20,7 +20,7 @@ func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.C
 		DB:  tx,
 		Ctx: ctx,
 	}
-	_, e := d.FindByPhoneNumber(request.PhoneNumber)
+	_, e := d.FindUserByPhoneNumber(request.PhoneNumber)
 	if e == nil || e.Code != errcode.NoUserFound.Code {
 		tx.Rollback()
 		return nil, errcode.PhoneNumberAlreadyExist
@@ -32,7 +32,7 @@ func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.C
 		AvatarFileName: "e859977fae97b33c7e3e56d46098bd5d",
 		AvatarExName:   "jpg",
 	}
-	e = d.Add(targetUser)
+	e = d.AddUser(targetUser)
 	if e != nil {
 		tx.Rollback()
 		return nil, e
@@ -55,7 +55,7 @@ func (u *user) Login(uid int, request *request.UserLoginRequest, ctx context.Con
 	targetUser, e := database.Database{
 		DB:  global.Database,
 		Ctx: ctx,
-	}.FindByPhoneNumber(request.PhoneNumber)
+	}.FindUserByPhoneNumber(request.PhoneNumber)
 	if e != nil {
 		if e.Code == errcode.NoUserFound.Code {
 			return nil, errcode.NoPhoneNumberFound
@@ -83,7 +83,7 @@ func (u *user) SetPassword(uid int, request *request.UserSetPasswordRequest, ctx
 		DB:  tx,
 		Ctx: ctx,
 	}
-	targetUser, e := d.FindByID(uint(uid))
+	targetUser, e := d.FindUserByID(uint(uid))
 	if e != nil {
 		if e.Code == errcode.NoUserFound.Code {
 			tx.Rollback()
@@ -96,7 +96,7 @@ func (u *user) SetPassword(uid int, request *request.UserSetPasswordRequest, ctx
 		tx.Rollback()
 		return nil, errcode.WrongPassword
 	}
-	e = d.Update(targetUser, "Password", request.Password)
+	e = d.UpdateUser(targetUser, "Password", request.Password)
 	if e != nil {
 		tx.Rollback()
 		return nil, e

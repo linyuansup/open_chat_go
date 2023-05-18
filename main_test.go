@@ -23,6 +23,7 @@ func TestMain(m *testing.M) {
 	global.DatabaseName += "_test"
 	global.Init()
 	cleanUp()
+	global.Init()
 	m.Run()
 }
 
@@ -30,8 +31,12 @@ func TestRunner(t *testing.T) {
 	t.Run("TestUserCreate", TestUserCreate)
 	t.Run("TestUserLogin", TestUserLogin)
 	t.Run("TestUserSetPassword", TestUserSetPassword)
+	t.Run("TestGroupCreate", TestGroupCreate)
 }
 
 func cleanUp() {
 	global.Database.Exec("delete from users")
+	global.Database.Exec("delete from groups")
+	global.Database.Exec("delete from messages")
+	global.Database.Exec("delete from relations")
 }
