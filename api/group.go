@@ -8,6 +8,9 @@ import (
 	"opChat/global"
 	"opChat/request"
 	"opChat/response"
+	"sync/atomic"
+
+	"gorm.io/gorm"
 )
 
 type group struct{}
@@ -16,21 +19,25 @@ var Group group
 
 func (g *group) Create(uid int, request *request.GroupCreateRequest, ctx context.Context) (*response.Response[response.GroupCreateResponse], *errcode.Error) {
 	tx := global.Database.Begin()
-	d := database.Database{
-		DB: tx,
-		Ctx: ctx,
-	}
+	groupDB := database.New[entity.Group](tx, ctx)
+	relationDB := database.New[entity.Relation](tx, ctx)
 	group := &entity.Group{
-		Name: request.Name,
+		Model: gorm.Model{
+			ID: uint(atomic.AddInt32(&global.NowGroupID, 1)),
+		},
+		Name:           request.Name,
 		AvatarFileName: "e859977fae97b33c7e3e56d46098bd5d",
-		AvatarExName: "jpg",
+		AvatarExName:   "jpg",
 	}
-	e := d.AddGroup(group)
+	e := groupDB.Add(group)
 	if e != nil {
 		tx.Rollback()
 		return nil, e
 	}
-	e = d.AddRelation(&entity.Relation{
+	e = relationDB.Add(&entity.Relation{
+		Model: gorm.Model{
+			ID: uint(atomic.AddInt32(&global.NowRelationID,1)),
+		},
 		SenderID: uid,
 		RecieverID: int(group.ID),
 		Mode: 1,
@@ -45,7 +52,7 @@ func (g *group) Create(uid int, request *request.GroupCreateRequest, ctx context
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
 	return &response.Response[response.GroupCreateResponse]{
-		Code: 200,
+		Code:    200,
 		Message: "创建群聊成功",
 		Data: &response.GroupCreateResponse{
 			ID: int(group.ID),

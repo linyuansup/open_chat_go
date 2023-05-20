@@ -28,10 +28,12 @@ func TestMain(m *testing.M) {
 }
 
 func TestRunner(t *testing.T) {
-	t.Run("TestUserCreate", TestUserCreate)
-	t.Run("TestUserLogin", TestUserLogin)
-	t.Run("TestUserSetPassword", TestUserSetPassword)
-	t.Run("TestGroupCreate", TestGroupCreate)
+	if !t.Run("TestUserCreate", TestUserCreate) ||
+	!t.Run("TestUserLogin", TestUserLogin) ||
+	!t.Run("TestUserSetPassword", TestUserSetPassword) ||
+	!t.Run("TestGroupCreate", TestGroupCreate) {
+		t.Fatal()
+	}
 }
 
 func cleanUp() {

@@ -8,6 +8,9 @@ import (
 	"opChat/global"
 	"opChat/request"
 	"opChat/response"
+	"sync/atomic"
+
+	"gorm.io/gorm"
 )
 
 type user struct{}
@@ -16,23 +19,23 @@ var User user
 
 func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.Context) (*response.Response[response.UserCreateResponse], *errcode.Error) {
 	tx := global.Database.Begin()
-	d := database.Database{
-		DB:  tx,
-		Ctx: ctx,
-	}
-	_, e := d.FindUserByPhoneNumber(request.PhoneNumber)
-	if e == nil || e.Code != errcode.NoUserFound.Code {
+	d := database.New[entity.User](tx, ctx)
+	_, e := d.FindByField("phone_number", request.PhoneNumber)
+	if e == nil || e.Code != errcode.NoTargetFound.Code {
 		tx.Rollback()
 		return nil, errcode.PhoneNumberAlreadyExist
 	}
 	targetUser := &entity.User{
+		Model: gorm.Model{
+			ID: uint(atomic.AddInt32(&global.NowUserID, 1)),
+		},
 		PhoneNumber:    request.PhoneNumber,
 		Password:       request.Password,
 		DeviceID:       request.DeviceID,
 		AvatarFileName: "e859977fae97b33c7e3e56d46098bd5d",
 		AvatarExName:   "jpg",
 	}
-	e = d.AddUser(targetUser)
+	e = d.Add(targetUser)
 	if e != nil {
 		tx.Rollback()
 		return nil, e
@@ -52,10 +55,7 @@ func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.C
 }
 
 func (u *user) Login(uid int, request *request.UserLoginRequest, ctx context.Context) (*response.Response[response.UserLoginResponse], *errcode.Error) {
-	targetUser, e := database.Database{
-		DB:  global.Database,
-		Ctx: ctx,
-	}.FindUserByPhoneNumber(request.PhoneNumber)
+	targetUser, e := database.New[entity.User](global.Database, ctx).FindByField("phone_number", request.PhoneNumber)
 	if e != nil {
 		if e.Code == errcode.NoUserFound.Code {
 			return nil, errcode.NoPhoneNumberFound
@@ -79,11 +79,8 @@ func (u *user) Login(uid int, request *request.UserLoginRequest, ctx context.Con
 
 func (u *user) SetPassword(uid int, request *request.UserSetPasswordRequest, ctx context.Context) (*response.Response[response.UserSetPasswordResponse], *errcode.Error) {
 	tx := global.Database.Begin()
-	d := database.Database{
-		DB:  tx,
-		Ctx: ctx,
-	}
-	targetUser, e := d.FindUserByID(uint(uid))
+	d := database.New[entity.User](tx, ctx)
+	targetUser, e := d.FindByID(uint(uid))
 	if e != nil {
 		if e.Code == errcode.NoUserFound.Code {
 			tx.Rollback()
@@ -96,7 +93,7 @@ func (u *user) SetPassword(uid int, request *request.UserSetPasswordRequest, ctx
 		tx.Rollback()
 		return nil, errcode.WrongPassword
 	}
-	e = d.UpdateUser(targetUser, "Password", request.Password)
+	e = d.Update(targetUser)
 	if e != nil {
 		tx.Rollback()
 		return nil, e

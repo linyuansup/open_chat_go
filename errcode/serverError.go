@@ -18,4 +18,5 @@ var (
 	InsertDataError        = NewError(10000014, "添加数据错误", 501)
 	UpdateDataError        = NewError(10000015, "更新数据错误", 501)
 	CommitError            = NewError(10000016, "提交事务错误", 501)
+	DeleteDataError        = NewError(10000017, "删除错误", 501)
 )

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"opChat/database"
+	"opChat/entity"
 	"opChat/errcode"
 	"opChat/global"
 	"opChat/response"
@@ -33,10 +34,7 @@ func Register[req any, res any](path string, userCheck bool, action func(uid int
 			errorResponse(&c, errcode.TypeConventFail.WithDetail(err.Error()), key)
 		}
 		if userCheck {
-			result, e := database.Database{
-				DB:  global.Database,
-				Ctx: c.Request().Context(),
-			}.FindUserByID(uint(intID))
+			result, e := database.New[entity.User](global.Database, c.Request().Context()).FindByID(uint(intID))
 			if e != nil {
 				errorResponse(&c, errcode.NoUserFound, key)
 				return
