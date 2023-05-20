@@ -72,12 +72,24 @@ func (g *group) Delete(uid int, request *request.GroupDeleteRequest, ctx context
 		}
 		return nil, e
 	}
+	_, e = relationDB.FindByField(&entity.Relation{
+		SenderID:   uid,
+		RecieverID: request.ID,
+		Mode:       1,
+	})
+	if e != nil {
+		tx.Rollback()
+		if e.Code == errcode.NoTargetFound.Code {
+			return nil, errcode.NotCreator
+		}
+		return nil, e
+	}
 	e = groupDB.Delete(targetGroup)
 	if e != nil {
 		tx.Rollback()
 		return nil, e
 	}
-	relation, e := relationDB.FindByField("reciever_id", targetGroup.ID)
+	relation, e := relationDB.FindByField(&entity.Relation{RecieverID: request.ID})
 	if e != nil {
 		tx.Rollback()
 		return nil, e

@@ -10,4 +10,5 @@ var (
 	NoRequest               = NewError(20000008, "目标未提出申请", 400)
 	NotAdmin                = NewError(20000009, "不是管理员", 400)
 	NoGroupFound            = NewError(20000010, "找不到群组", 400)
+	NotCreator              = NewError(20000011, "不是群主", 400)
 )
