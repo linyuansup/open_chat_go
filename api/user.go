@@ -57,22 +57,22 @@ func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.C
 func (u *user) Login(uid int, request *request.UserLoginRequest, ctx context.Context) (*response.Response[response.UserLoginResponse], *errcode.Error) {
 	targetUser, e := database.New[entity.User](global.Database, ctx).FindByField("phone_number", request.PhoneNumber)
 	if e != nil {
-		if e.Code == errcode.NoUserFound.Code {
+		if e.Code == errcode.NoTargetFound.Code {
 			return nil, errcode.NoPhoneNumberFound
 		}
 		return nil, e
 	}
-	if targetUser.Password != request.Password {
+	if (*targetUser)[0].Password != request.Password {
 		return nil, errcode.WrongPassword
 	}
-	if targetUser.DeviceID != request.DeviceID {
+	if (*targetUser)[0].DeviceID != request.DeviceID {
 		return nil, errcode.WrongDeviceID
 	}
 	return &response.Response[response.UserLoginResponse]{
 		Code:    200,
 		Message: "登录成功",
 		Data: &response.UserLoginResponse{
-			ID: targetUser.ID,
+			ID: (*targetUser)[0].ID,
 		},
 	}, nil
 }

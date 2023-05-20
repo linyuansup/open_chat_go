@@ -30,8 +30,8 @@ func (d *database[T]) FindByID(id uint) (*T, *errcode.Error) {
 	return &targetT, nil
 }
 
-func (d *database[T]) FindByField(k string, v any) (*T, *errcode.Error) {
-	var targetT T
+func (d *database[T]) FindByField(k string, v any) (*[]T, *errcode.Error) {
+	var targetT []T
 	result := d.db.Where(k + " = ?", v).Find(&targetT)
 	if result.Error != nil {
 		return nil, errcode.FindDataError.WithDetail(result.Error.Error())

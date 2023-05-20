@@ -15,7 +15,8 @@ const (
 )
 
 var (
-	userID int
+	userID  int
+	groupID int
 )
 
 func TestMain(m *testing.M) {
@@ -29,9 +30,10 @@ func TestMain(m *testing.M) {
 
 func TestRunner(t *testing.T) {
 	if !t.Run("TestUserCreate", TestUserCreate) ||
-	!t.Run("TestUserLogin", TestUserLogin) ||
-	!t.Run("TestUserSetPassword", TestUserSetPassword) ||
-	!t.Run("TestGroupCreate", TestGroupCreate) {
+		!t.Run("TestUserLogin", TestUserLogin) ||
+		!t.Run("TestUserSetPassword", TestUserSetPassword) ||
+		!t.Run("TestGroupCreate", TestGroupCreate) ||
+		!t.Run("TestGroupDelete", TestGroupDelete) {
 		t.Fatal()
 	}
 }
