@@ -25,6 +25,15 @@ func TestUserCreate(t *testing.T) {
 	if e == nil {
 		t.Fatal("用户第二次注册成功")
 	}
+	res, e = api.User.Create(0, &request.UserCreateRequest{
+		PhoneNumber: phoneNumber2,
+		Password:    password,
+		DeviceID:    deviceID,
+	}, context.Background())
+	if e != nil {
+		t.Fatal("用户第一次注册失败：" + e.Error())
+	}
+	userID2 = int(res.Data.ID)
 }
 
 func TestUserLogin(t *testing.T) {

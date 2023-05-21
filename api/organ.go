@@ -18,6 +18,9 @@ type organ struct{}
 var Organ organ
 
 func (o *organ) Join(uid int, request *request.OrganJoinRequest, ctx context.Context) (*response.Response[response.OrganJoinResponse], *errcode.Error) {
+	if uid == request.ID {
+		return nil, errcode.AlreadyRequest
+	}
 	tx := global.Database.Begin()
 	relationDatabase := database.New[entity.Relation](tx, ctx)
 	if request.ID/100000000 >= 6 {
@@ -80,6 +83,11 @@ func (o *organ) Join(uid int, request *request.OrganJoinRequest, ctx context.Con
 	if e != nil {
 		tx.Rollback()
 		return nil, e
+	}
+	err := tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
 	return &response.Response[response.OrganJoinResponse]{
 		Code:    200,

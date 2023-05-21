@@ -15,5 +15,5 @@ var (
 	UserIsCreator           = NewError(20000013, "用户是群主", 400)
 	UserIsAdmin             = NewError(20000014, "用户是管理员", 400)
 	AlreadyRequest          = NewError(20000015, "已存在申请", 400)
-	UserIsMember             = NewError(20000014, "用户是成员", 400)
+	UserIsMember            = NewError(20000016, "用户是成员", 400)
 )
