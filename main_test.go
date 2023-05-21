@@ -7,6 +7,7 @@ import (
 
 const (
 	phoneNumber      = "19556172642"
+	phoneNumber2     = "19556172644"
 	wrongPhoneNumber = "19556172643"
 	password         = "81a0ad68ca3e7943db8833dc48927e2f"
 	wrongPassword    = "81a0ad68ca3e7943db8833dc48927e2d"
@@ -16,6 +17,7 @@ const (
 
 var (
 	userID  int
+	userID2 int
 	groupID int
 )
 
@@ -33,7 +35,8 @@ func TestRunner(t *testing.T) {
 		!t.Run("TestUserLogin", TestUserLogin) ||
 		!t.Run("TestUserSetPassword", TestUserSetPassword) ||
 		!t.Run("TestGroupCreate", TestGroupCreate) ||
-		!t.Run("TestGroupDelete", TestGroupDelete) {
+		!t.Run("TestGroupDelete", TestGroupDelete) ||
+		!t.Run("TestOrganJoin", TestOrganJoin) {
 		t.Fatal()
 	}
 }
