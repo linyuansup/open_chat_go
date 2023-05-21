@@ -65,14 +65,14 @@ func TestUserLogin(t *testing.T) {
 func TestUserSetPassword(t *testing.T) {
 	_, e := api.User.SetPassword(userID, &request.UserSetPasswordRequest{
 		OldPassword: password,
-		Password: password,
+		Password:    password,
 	}, context.Background())
 	if e != nil {
 		t.Fatal("修改密码失败：" + e.Error())
 	}
 	_, e = api.User.SetPassword(userID, &request.UserSetPasswordRequest{
 		OldPassword: wrongPassword,
-		Password: password,
+		Password:    password,
 	}, context.Background())
 	if e == nil {
 		t.Fatal("使用错误密码修改密码成功")

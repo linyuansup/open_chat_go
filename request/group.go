@@ -7,3 +7,8 @@ type GroupCreateRequest struct {
 type GroupDeleteRequest struct {
 	ID int `json:"id" validate:"len=9"`
 }
+
+type GroupSetAdminRequest struct {
+	GroupID int `json:"groupID" validate:"len=9"`
+	UserID  int `json:"userID" validate:"len=9"`
+}
