@@ -55,3 +55,20 @@ func TestGroupAgree(t *testing.T) {
 		t.Fatal("同意重复请求成功")
 	}
 }
+
+func TestGroupSetAdmin(t *testing.T) {
+	_, e := api.Group.SetAdmin(userID, &request.GroupSetAdminRequest{
+		UserID:  userID2,
+		GroupID: groupID,
+	}, context.Background())
+	if e != nil {
+		t.Fatal("设置管理员失败：" + e.Error())
+	}
+	_, e = api.Group.SetAdmin(userID, &request.GroupSetAdminRequest{
+		UserID:  userID2,
+		GroupID: groupID,
+	}, context.Background())
+	if e == nil {
+		t.Fatal("重复设置管理员成功")
+	}
+}
