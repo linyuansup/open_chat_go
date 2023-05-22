@@ -15,6 +15,8 @@ func main() {
 
 	http.Register("/group/create", true, api.Group.Create)
 
+	http.Register("/organ/join", true, api.Oran.Join)
+
 	e := global.StartServe()
 	if e != nil {
 		panic(e)
