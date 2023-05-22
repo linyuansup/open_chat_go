@@ -6,12 +6,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type Message struct {
-	ID        uint `gorm:"primarykey"`
+type Member struct {
+	User      int
+	Group     int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	From      int
-	To        int
-	Data      string
+	Grant     bool
+	Admin     bool
 }

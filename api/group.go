@@ -2,7 +2,7 @@ package api
 
 import (
 	"context"
-	"opChat/database"
+	"errors"
 	"opChat/entity"
 	"opChat/errcode"
 	"opChat/global"
@@ -19,32 +19,17 @@ var Group group
 
 func (g *group) Create(uid int, request *request.GroupCreateRequest, ctx context.Context) (*response.Response[response.GroupCreateResponse], *errcode.Error) {
 	tx := global.Database.Begin()
-	groupDB := database.New[entity.Group](tx, ctx)
-	relationDB := database.New[entity.Relation](tx, ctx)
-	group := &entity.Group{
-		Model: gorm.Model{
-			ID: uint(atomic.AddInt32(&global.NowGroupID, 1)),
-		},
+	id := atomic.AddInt32(&global.NowGroupID, 1)
+	e := tx.Create(&entity.Group{
+		ID:             uint(id),
+		Creator:        uint(uid),
 		Name:           request.Name,
-		AvatarFileName: "e859977fae97b33c7e3e56d46098bd5d",
-		AvatarExName:   "jpg",
-	}
-	e := groupDB.Add(group)
+		AvatarFileName: global.AvatarFileName,
+		AvatarExName:   global.AvatarExName,
+	}).Error
 	if e != nil {
 		tx.Rollback()
-		return nil, e
-	}
-	e = relationDB.Add(&entity.Relation{
-		Model: gorm.Model{
-			ID: uint(atomic.AddInt32(&global.NowRelationID, 1)),
-		},
-		SenderID:   uid,
-		RecieverID: int(group.ID),
-		Mode:       1,
-	})
-	if e != nil {
-		tx.Rollback()
-		return nil, e
+		return nil, errcode.InsertDataError.WithDetail(e.Error())
 	}
 	err := tx.Commit().Error
 	if err != nil {
@@ -55,53 +40,44 @@ func (g *group) Create(uid int, request *request.GroupCreateRequest, ctx context
 		Code:    200,
 		Message: "创建群聊成功",
 		Data: &response.GroupCreateResponse{
-			ID: int(group.ID),
+			ID: int(id),
 		},
 	}, nil
 }
 
 func (g *group) Delete(uid int, request *request.GroupDeleteRequest, ctx context.Context) (*response.Response[response.GroupDeleteResponse], *errcode.Error) {
 	tx := global.Database.Begin()
-	groupDB := database.New[entity.Group](tx, ctx)
-	relationDB := database.New[entity.Relation](tx, ctx)
-	targetGroup, e := groupDB.FindByID(uint(request.ID))
-	if e != nil {
+	targetGroup := entity.Group{
+		ID: uint(request.ID),
+	}
+	err := tx.Find(&targetGroup).Error
+	if err != nil {
 		tx.Rollback()
-		if e.Code == errcode.NoTargetFound.Code {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errcode.NoGroupFound
 		}
-		return nil, e
+		return nil, errcode.FindDataError.WithDetail(err.Error())
 	}
-	_, e = relationDB.FindByField(&entity.Relation{
-		SenderID:   uid,
-		RecieverID: request.ID,
-		Mode:       1,
-	})
-	if e != nil {
+	if targetGroup.Creator != uint(uid) {
 		tx.Rollback()
-		if e.Code == errcode.NoTargetFound.Code {
-			return nil, errcode.NotCreator
-		}
-		return nil, e
+		return nil, errcode.NotCreator
 	}
-	e = groupDB.Delete(targetGroup)
-	if e != nil {
+	err = tx.Where("members.group = ?", targetGroup.ID).Delete(&entity.Member{}).Error
+	if err != nil {
 		tx.Rollback()
-		return nil, e
+		return nil, errcode.DeleteDataError.WithDetail(err.Error())
 	}
-	relation, e := relationDB.FindByField(&entity.Relation{RecieverID: request.ID})
-	if e != nil {
+	err = tx.Where("messages.to = ?", targetGroup.ID).Delete(&entity.Message{}).Error
+	if err != nil {
 		tx.Rollback()
-		return nil, e
+		return nil, errcode.DeleteDataError.WithDetail(err.Error())
 	}
-	for _, r := range *relation {
-		e = relationDB.Delete(&r)
-		if e != nil {
-			tx.Rollback()
-			return nil, e
-		}
+	err = tx.Delete(&targetGroup).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.DeleteDataError.WithDetail(err.Error())
 	}
-	err := tx.Commit().Error
+	err = tx.Commit().Error
 	if err != nil {
 		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
@@ -110,62 +86,5 @@ func (g *group) Delete(uid int, request *request.GroupDeleteRequest, ctx context
 		Code:    200,
 		Message: "删除群聊成功",
 		Data:    &response.GroupDeleteResponse{},
-	}, nil
-}
-
-func (g *group) SetAdmin(uid int, request *request.GroupSetAdminRequest, ctx context.Context) (*response.Response[response.GroupSetAdminResponse], *errcode.Error) {
-	tx := global.Database.Begin()
-	relationDB := database.New[entity.Relation](tx, ctx)
-	_, e := relationDB.FindByField(&entity.Relation{RecieverID: request.GroupID})
-	if e != nil {
-		tx.Rollback()
-		if e.Code == errcode.NoTargetFound.Code {
-			return nil, errcode.NoGroupFound
-		}
-		return nil, e
-	}
-	target, e := relationDB.FindByField(&entity.Relation{
-		RecieverID: request.GroupID,
-		SenderID:   request.UserID,
-	})
-	if e != nil {
-		tx.Rollback()
-		if e.Code == errcode.NoTargetFound.Code {
-			return nil, errcode.UserNotInGroup
-		}
-		return nil, e
-	}
-	t := (*target)[0]
-	switch t.Mode {
-	case 0:
-		{
-			tx.Rollback()
-			return nil, errcode.UserNotInGroup
-		}
-	case 1:
-		{
-			tx.Rollback()
-			return nil, errcode.UserIsCreator
-		}
-	case 2:
-		{
-			tx.Rollback()
-			return nil, errcode.UserIsAdmin
-		}
-	}
-	t.Mode = 2
-	e = relationDB.Update(&t)
-	if e != nil {
-		return nil, e
-	}
-	err := tx.Commit().Error
-	if err != nil {
-		tx.Rollback()
-		return nil, errcode.CommitError.WithDetail(err.Error())
-	}
-	return &response.Response[response.GroupSetAdminResponse]{
-		Code:    200,
-		Message: "设置为管理员成功",
-		Data:    &response.GroupSetAdminResponse{},
 	}, nil
 }

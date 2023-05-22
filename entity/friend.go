@@ -6,12 +6,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type Message struct {
-	ID        uint `gorm:"primarykey"`
+type Friend struct {
+	From      int
+	To        int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	From      int
-	To        int
-	Data      string
+	Grant     bool
 }

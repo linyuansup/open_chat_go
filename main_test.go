@@ -16,9 +16,10 @@ const (
 )
 
 var (
-	userID  int
-	userID2 int
-	groupID int
+	userID   int
+	userID2  int
+	groupID  int
+	groupID2 int
 )
 
 func TestMain(m *testing.M) {
@@ -35,15 +36,15 @@ func TestRunner(t *testing.T) {
 		!t.Run("TestUserLogin", TestUserLogin) ||
 		!t.Run("TestUserSetPassword", TestUserSetPassword) ||
 		!t.Run("TestGroupCreate", TestGroupCreate) ||
-		!t.Run("TestGroupDelete", TestGroupDelete) ||
-		!t.Run("TestOrganJoin", TestOrganJoin) {
+		!t.Run("TestGroupDelete", TestGroupDelete) {
 		t.Fatal()
 	}
 }
 
 func cleanUp() {
-	global.Database.Exec("delete from users")
-	global.Database.Exec("delete from groups")
-	global.Database.Exec("delete from messages")
-	global.Database.Exec("delete from relations")
+	global.Database.Exec("delete from members").
+		Exec("delete from groups").
+		Exec("delete from messages").
+		Exec("delete from friends").
+		Exec("delete from users")
 }
