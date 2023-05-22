@@ -9,8 +9,6 @@ import (
 	"opChat/request"
 	"opChat/response"
 	"sync/atomic"
-
-	"gorm.io/gorm"
 )
 
 type user struct{}
@@ -26,9 +24,7 @@ func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.C
 		return nil, errcode.PhoneNumberAlreadyExist
 	}
 	targetUser := &entity.User{
-		Model: gorm.Model{
-			ID: uint(atomic.AddInt32(&global.NowUserID, 1)),
-		},
+		ID:             uint(atomic.AddInt32(&global.NowUserID, 1)),
 		PhoneNumber:    request.PhoneNumber,
 		Password:       request.Password,
 		DeviceID:       request.DeviceID,

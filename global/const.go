@@ -13,6 +13,5 @@ var (
 	HttpPort         = "80"
 	NowUserID        int32
 	NowGroupID       int32
-	NowRelationID    int32
 	NowMessageID     int32
 )

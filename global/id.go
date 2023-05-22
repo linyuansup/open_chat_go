@@ -33,18 +33,6 @@ func initID() {
 	}
 	Log.Info("startup", fmt.Sprintf("NowGroupID = %d", NowGroupID))
 
-	r := entity.Relation{}
-	err = Database.Last(&r).Error
-	if err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			panic(err)
-		}
-		NowRelationID = 0
-	} else {
-		NowRelationID = int32(r.ID)
-	}
-	Log.Info("startup", fmt.Sprintf("NowRelationID = %d", NowRelationID))
-
 	m := entity.Message{}
 	err = Database.Last(&m).Error
 	if err != nil {
