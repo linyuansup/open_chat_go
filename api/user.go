@@ -2,13 +2,15 @@ package api
 
 import (
 	"context"
-	"opChat/database"
+	"errors"
 	"opChat/entity"
 	"opChat/errcode"
 	"opChat/global"
 	"opChat/request"
 	"opChat/response"
 	"sync/atomic"
+
+	"gorm.io/gorm"
 )
 
 type user struct{}
@@ -17,9 +19,8 @@ var User user
 
 func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.Context) (*response.Response[response.UserCreateResponse], *errcode.Error) {
 	tx := global.Database.Begin()
-	d := database.New[entity.User](tx, ctx)
-	_, e := d.FindByField(&entity.User{PhoneNumber: request.PhoneNumber})
-	if e == nil || e.Code != errcode.NoTargetFound.Code {
+	err := tx.Where("phone_number = ?", request.PhoneNumber).First(&entity.User{}).Error
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		tx.Rollback()
 		return nil, errcode.PhoneNumberAlreadyExist
 	}
@@ -28,15 +29,15 @@ func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.C
 		PhoneNumber:    request.PhoneNumber,
 		Password:       request.Password,
 		DeviceID:       request.DeviceID,
-		AvatarFileName: "e859977fae97b33c7e3e56d46098bd5d",
-		AvatarExName:   "jpg",
+		AvatarFileName: global.AvatarFileName,
+		AvatarExName:   global.AvatarExName,
 	}
-	e = d.Add(targetUser)
-	if e != nil {
+	err = tx.Create(targetUser).Error
+	if err != nil {
 		tx.Rollback()
-		return nil, e
+		return nil, errcode.InsertDataError.WithDetail(err.Error())
 	}
-	err := tx.Commit().Error
+	err = tx.Commit().Error
 	if err != nil {
 		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
@@ -51,50 +52,52 @@ func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.C
 }
 
 func (u *user) Login(uid int, request *request.UserLoginRequest, ctx context.Context) (*response.Response[response.UserLoginResponse], *errcode.Error) {
-	targetUser, e := database.New[entity.User](global.Database, ctx).FindByField(&entity.User{PhoneNumber: request.PhoneNumber})
-	if e != nil {
-		if e.Code == errcode.NoTargetFound.Code {
-			return nil, errcode.NoPhoneNumberFound
-		}
-		return nil, e
+	var targetUser entity.User
+	e := global.Database.Where("phone_number = ?", request.PhoneNumber).Find(&targetUser)
+	if e.RowsAffected == 0 {
+		return nil, errcode.NoPhoneNumberFound
 	}
-	if (*targetUser)[0].Password != request.Password {
+	if e.Error != nil {
+		return nil, errcode.FindDataError.WithDetail(e.Error.Error())
+	}
+	if targetUser.Password != request.Password {
 		return nil, errcode.WrongPassword
 	}
-	if (*targetUser)[0].DeviceID != request.DeviceID {
+	if targetUser.DeviceID != request.DeviceID {
 		return nil, errcode.WrongDeviceID
 	}
 	return &response.Response[response.UserLoginResponse]{
 		Code:    200,
 		Message: "登录成功",
 		Data: &response.UserLoginResponse{
-			ID: (*targetUser)[0].ID,
+			ID: targetUser.ID,
 		},
 	}, nil
 }
 
 func (u *user) SetPassword(uid int, request *request.UserSetPasswordRequest, ctx context.Context) (*response.Response[response.UserSetPasswordResponse], *errcode.Error) {
 	tx := global.Database.Begin()
-	d := database.New[entity.User](tx, ctx)
-	targetUser, e := d.FindByID(uint(uid))
-	if e != nil {
-		if e.Code == errcode.NoUserFound.Code {
-			tx.Rollback()
+	targetUser := entity.User{
+		ID: uint(uid),
+	}
+	err := tx.First(&targetUser).Error
+	if err != nil {
+		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errcode.NoTargetFound
 		}
-		tx.Rollback()
-		return nil, e
+		return nil, errcode.FindDataError.WithDetail(err.Error())
 	}
 	if request.OldPassword != targetUser.Password {
 		tx.Rollback()
 		return nil, errcode.WrongPassword
 	}
-	e = d.Update(targetUser)
-	if e != nil {
+	err = tx.Save(&targetUser).Error
+	if err != nil {
 		tx.Rollback()
-		return nil, e
+		return nil, errcode.UpdateDataError.WithDetail(err.Error())
 	}
-	err := tx.Commit().Error
+	err = tx.Commit().Error
 	if err != nil {
 		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
