@@ -32,9 +32,26 @@ func TestGroupDelete(t *testing.T) {
 		t.Fatal("使用非群主删除群聊成功")
 	}
 	_, e = api.Group.Delete(userID, &request.GroupDeleteRequest{
-		ID: groupID,
+		ID: groupID2,
 	}, context.Background())
 	if e != nil {
 		t.Fatal("删除群聊失败：" + e.Error())
+	}
+}
+
+func TestGroupAgree(t *testing.T) {
+	_, e := api.Group.Agree(userID, &request.GroupAgreeRequest{
+		UserID:  userID2,
+		GroupID: groupID,
+	}, context.Background())
+	if e != nil {
+		t.Fatal("同意请求失败：" + e.Error())
+	}
+	_, e = api.Group.Agree(userID, &request.GroupAgreeRequest{
+		UserID:  userID2,
+		GroupID: groupID,
+	}, context.Background())
+	if e == nil {
+		t.Fatal("同意重复请求成功")
 	}
 }

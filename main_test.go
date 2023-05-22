@@ -37,7 +37,8 @@ func TestRunner(t *testing.T) {
 		!t.Run("TestUserSetPassword", TestUserSetPassword) ||
 		!t.Run("TestGroupCreate", TestGroupCreate) ||
 		!t.Run("TestGroupDelete", TestGroupDelete) ||
-		!t.Run("TestOrganJoin", TestOrganJoin) {
+		!t.Run("TestOrganJoin", TestOrganJoin) ||
+		!t.Run("TestGroupAgree", TestGroupAgree) {
 		t.Fatal()
 	}
 }

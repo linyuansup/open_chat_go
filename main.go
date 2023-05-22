@@ -14,6 +14,7 @@ func main() {
 	http.Register("/user/setPassword", true, api.User.SetPassword)
 
 	http.Register("/group/create", true, api.Group.Create)
+	http.Register("/group/agree", true, api.Group.Agree)
 
 	http.Register("/organ/join", true, api.Oran.Join)
 

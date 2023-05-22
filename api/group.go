@@ -88,3 +88,69 @@ func (g *group) Delete(uid int, request *request.GroupDeleteRequest, ctx context
 		Data:    &response.GroupDeleteResponse{},
 	}, nil
 }
+
+func (g *group) Agree(uid int, request *request.GroupAgreeRequest, ctx context.Context) (*response.Response[response.GroupAgreeResponse], *errcode.Error) {
+	tx := global.Database.Begin()
+	targetGroup := entity.Group{
+		ID: uint(request.GroupID),
+	}
+	err := tx.First(&targetGroup).Error
+	if err != nil {
+		tx.Rollback()
+		if errors.Is(err,  gorm.ErrRecordNotFound) {
+			return nil, errcode.NoGroupFound
+		}
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	if !(uid == int(targetGroup.Creator)) {
+		member := entity.Member {
+			Group: request.GroupID,
+			User: uid,
+		}
+		err = tx.First(&member).Error
+		if err != nil {
+			tx.Rollback()
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, errcode.UserNotInGroup
+			}
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		if !member.Admin {
+			tx.Rollback()
+			return nil, errcode.NoChangePermission
+		}
+	}
+	member := entity.Member {
+		User: request.UserID,
+		Group: request.GroupID,
+	}
+	err = tx.First(&member).Error
+	if err != nil {
+		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errcode.NoRequest
+		}
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	if member.Grant {
+		tx.Rollback()
+		return nil, errcode.UserIsMember
+	}
+	member.Grant = true
+	err = tx.Save(&member).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.UpdateDataError.WithDetail(err.Error())
+	}
+	err = tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.CommitError.WithDetail(err.Error())
+	}
+	return &response.Response[response.GroupAgreeResponse]{
+		Code: 200,
+		Message: "操作成功",
+		Data: &response.GroupAgreeResponse{},
+	}, nil
+}
+

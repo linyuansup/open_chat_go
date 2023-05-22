@@ -6,4 +6,4 @@ type GroupCreateResponse struct {
 
 type GroupDeleteResponse struct{}
 
-type GroupSetAdminResponse struct{}
+type GroupAgreeResponse struct{}
