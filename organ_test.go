@@ -8,28 +8,62 @@ import (
 )
 
 func TestOrganJoin(t *testing.T) {
-	_, e := api.Oran.Join(userID2, &request.OrganJoinRequest{
+	_, e := api.Organ.Join(userID2, &request.OrganJoinRequest{
 		ID: groupID,
 	}, context.Background())
 	if e != nil {
 		t.Fatal("加入组织失败：" + e.Error())
 	}
-	_, e = api.Oran.Join(userID2, &request.OrganJoinRequest{
+	_, e = api.Organ.Join(userID2, &request.OrganJoinRequest{
 		ID: groupID,
 	}, context.Background())
 	if e == nil {
 		t.Fatal("第二次加入组织成功")
 	}
-	_, e = api.Oran.Join(userID2, &request.OrganJoinRequest{
+	_, e = api.Organ.Join(userID2, &request.OrganJoinRequest{
 		ID: userID,
 	}, context.Background())
 	if e != nil {
 		t.Fatal("加入组织失败：" + e.Error())
 	}
-	_, e = api.Oran.Join(userID2, &request.OrganJoinRequest{
+	_, e = api.Organ.Join(userID2, &request.OrganJoinRequest{
 		ID: userID,
 	}, context.Background())
 	if e == nil {
 		t.Fatal("第二次加入组织成功")
+	}
+}
+
+func TestOrganAvatar(t *testing.T) {
+	_, e := api.Organ.Avatar(userID, &request.OrganAvatarRequest{
+		ID: userID,
+	}, context.Background())
+	if e != nil {
+		t.Fatal("获取头像失败：" + e.Error())
+	}
+	_, e = api.Organ.Avatar(userID, &request.OrganAvatarRequest{
+		ID: groupID,
+	}, context.Background())
+	if e != nil {
+		t.Fatal("获取头像失败：" + e.Error())
+	}
+}
+
+func TestOrganSetAvatar(t *testing.T) {
+	_, e := api.Organ.SetAvatar(userID, &request.OrganSetAvatarRequest{
+		ID: userID,
+		File: avatarBase,
+		Ex: "png",
+	}, context.Background())
+	if e != nil {
+		t.Fatal("设置头像失败：" + e.Error())
+	}
+	_, e = api.Organ.SetAvatar(userID, &request.OrganSetAvatarRequest{
+		ID: groupID,
+		File: avatarBase,
+		Ex: "png",
+	}, context.Background())
+	if e != nil {
+		t.Fatal("设置头像失败：" + e.Error())
 	}
 }

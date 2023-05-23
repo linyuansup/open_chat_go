@@ -17,7 +17,9 @@ func main() {
 	http.Register("/group/agree", true, api.Group.Agree)
 	http.Register("/group/setAdmin", true, api.Group.SetAdmin)
 
-	http.Register("/organ/join", true, api.Oran.Join)
+	http.Register("/organ/join", true, api.Organ.Join)
+	http.Register("/organ/avatar", true, api.Organ.Avatar)
+	http.Register("/organ/setAvatar", true, api.Organ.SetAvatar)
 
 	e := global.StartServe()
 	if e != nil {
