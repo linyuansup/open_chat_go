@@ -11,3 +11,7 @@ type GroupAgree struct{}
 type GroupSetAdmin struct{}
 
 type GroupRemoveAdmin struct{}
+
+type GroupRequest struct {
+	Request []Request `json:"request"`
+}

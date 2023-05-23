@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"errors"
 	"opChat/entity"
 	"opChat/errcode"
@@ -17,7 +16,7 @@ type group struct{}
 
 var Group group
 
-func (g *group) Create(uid int, request *request.GroupCreate, ctx context.Context) (*response.Response[response.GroupCreate], *errcode.Error) {
+func (g *group) Create(uid int, request *request.GroupCreate) (*response.Response[response.GroupCreate], *errcode.Error) {
 	tx := global.Database.Begin()
 	id := atomic.AddInt32(&global.NowGroupID, 1)
 	e := tx.Create(&entity.Group{
@@ -45,7 +44,7 @@ func (g *group) Create(uid int, request *request.GroupCreate, ctx context.Contex
 	}, nil
 }
 
-func (g *group) Delete(uid int, request *request.GroupDelete, ctx context.Context) (*response.Response[response.GroupDelete], *errcode.Error) {
+func (g *group) Delete(uid int, request *request.GroupDelete) (*response.Response[response.GroupDelete], *errcode.Error) {
 	tx := global.Database.Begin()
 	targetGroup := entity.Group{
 		ID: uint(request.ID),
@@ -89,7 +88,7 @@ func (g *group) Delete(uid int, request *request.GroupDelete, ctx context.Contex
 	}, nil
 }
 
-func (g *group) Agree(uid int, request *request.GroupAgree, ctx context.Context) (*response.Response[response.GroupAgree], *errcode.Error) {
+func (g *group) Agree(uid int, request *request.GroupAgree) (*response.Response[response.GroupAgree], *errcode.Error) {
 	tx := global.Database.Begin()
 	targetGroup := entity.Group{
 		ID: uint(request.GroupID),
@@ -154,7 +153,7 @@ func (g *group) Agree(uid int, request *request.GroupAgree, ctx context.Context)
 	}, nil
 }
 
-func (g *group) SetAdmin(uid int, request *request.GroupSetAdmin, ctx context.Context) (*response.Response[response.GroupSetAdmin], *errcode.Error) {
+func (g *group) SetAdmin(uid int, request *request.GroupSetAdmin) (*response.Response[response.GroupSetAdmin], *errcode.Error) {
 	tx := global.Database.Begin()
 	group := entity.Group{
 		ID: uint(request.GroupID),
@@ -212,7 +211,7 @@ func (g *group) SetAdmin(uid int, request *request.GroupSetAdmin, ctx context.Co
 	}, nil
 }
 
-func (g *group) RemoveAdmin(uid int, request *request.GroupRemoveAdmin, ctx context.Context) (*response.Response[response.GroupRemoveAdmin], *errcode.Error) {
+func (g *group) RemoveAdmin(uid int, request *request.GroupRemoveAdmin) (*response.Response[response.GroupRemoveAdmin], *errcode.Error) {
 	tx := global.Database.Begin()
 	group := entity.Group{
 		ID: uint(request.GroupID),

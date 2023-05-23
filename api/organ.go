@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"errors"
 	"opChat/entity"
 	"opChat/errcode"
@@ -17,7 +16,7 @@ type organ struct{}
 
 var Organ organ
 
-func (o *organ) Join(uid int, request *request.OrganJoin, ctx context.Context) (*response.Response[response.OrganJoinResponse], *errcode.Error) {
+func (o *organ) Join(uid int, request *request.OrganJoin) (*response.Response[response.OrganJoinResponse], *errcode.Error) {
 	tx := global.Database.Begin()
 	var err error
 	if request.ID >= 600000000 {
@@ -112,7 +111,7 @@ func (o *organ) Join(uid int, request *request.OrganJoin, ctx context.Context) (
 	}, nil
 }
 
-func (o *organ) Avatar(uid int, request *request.OrganAvatar, ctx context.Context) (*response.Response[response.OrganAvatar], *errcode.Error) {
+func (o *organ) Avatar(uid int, request *request.OrganAvatar) (*response.Response[response.OrganAvatar], *errcode.Error) {
 	tx := global.Database.Begin()
 	var (
 		avatarName string
@@ -168,7 +167,7 @@ func (o *organ) Avatar(uid int, request *request.OrganAvatar, ctx context.Contex
 	}, nil
 }
 
-func (o *organ) SetAvatar(uid int, request *request.OrganSetAvatar, ctx context.Context) (*response.Response[response.OrganSetAvatar], *errcode.Error) {
+func (o *organ) SetAvatar(uid int, request *request.OrganSetAvatar) (*response.Response[response.OrganSetAvatar], *errcode.Error) {
 	tx := global.Database.Begin()
 	var err error
 	file, e := util.Base64Decode([]byte(request.File))
@@ -253,7 +252,7 @@ func (o *organ) SetAvatar(uid int, request *request.OrganSetAvatar, ctx context.
 	}, nil
 }
 
-func (o *organ) Name(uid int, request *request.OrganName, ctx context.Context) (*response.Response[response.OrganName], *errcode.Error) {
+func (o *organ) Name(uid int, request *request.OrganName) (*response.Response[response.OrganName], *errcode.Error) {
 	tx := global.Database.Begin()
 	var (
 		name string
@@ -300,7 +299,7 @@ func (o *organ) Name(uid int, request *request.OrganName, ctx context.Context) (
 	}, nil
 }
 
-func (o *organ) Exit(uid int, request *request.OrganExit, ctx context.Context) (*response.Response[response.OrganExit], *errcode.Error) {
+func (o *organ) Exit(uid int, request *request.OrganExit) (*response.Response[response.OrganExit], *errcode.Error) {
 	tx := global.Database.Begin()
 	var err error
 	if request.ID >= 600000000 {

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"errors"
 	"opChat/entity"
 	"opChat/errcode"
@@ -17,7 +16,7 @@ type user struct{}
 
 var User user
 
-func (u *user) Create(uid int, request *request.UserCreate, ctx context.Context) (*response.Response[response.UserCreate], *errcode.Error) {
+func (u *user) Create(uid int, request *request.UserCreate) (*response.Response[response.UserCreate], *errcode.Error) {
 	tx := global.Database.Begin()
 	err := tx.Where("phone_number = ?", request.PhoneNumber).First(&entity.User{}).Error
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -52,7 +51,7 @@ func (u *user) Create(uid int, request *request.UserCreate, ctx context.Context)
 	}, nil
 }
 
-func (u *user) Login(uid int, request *request.UserLogin, ctx context.Context) (*response.Response[response.UserLogin], *errcode.Error) {
+func (u *user) Login(uid int, request *request.UserLogin) (*response.Response[response.UserLogin], *errcode.Error) {
 	var targetUser entity.User
 	e := global.Database.Where("phone_number = ?", request.PhoneNumber).Find(&targetUser)
 	if e.RowsAffected == 0 {
@@ -76,7 +75,7 @@ func (u *user) Login(uid int, request *request.UserLogin, ctx context.Context) (
 	}, nil
 }
 
-func (u *user) SetPassword(uid int, request *request.UserSetPassword, ctx context.Context) (*response.Response[response.UserSetPassword], *errcode.Error) {
+func (u *user) SetPassword(uid int, request *request.UserSetPassword) (*response.Response[response.UserSetPassword], *errcode.Error) {
 	tx := global.Database.Begin()
 	targetUser := entity.User{
 		ID: uint(uid),
@@ -110,7 +109,7 @@ func (u *user) SetPassword(uid int, request *request.UserSetPassword, ctx contex
 	}, nil
 }
 
-func (u *user) SetName(uid int, request *request.UserSetName, ctx context.Context) (*response.Response[response.UserSetName], *errcode.Error) {
+func (u *user) SetName(uid int, request *request.UserSetName) (*response.Response[response.UserSetName], *errcode.Error) {
 	tx := global.Database.Begin()
 	user := entity.User{
 		ID: uint(uid),

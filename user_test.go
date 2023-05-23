@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"opChat/api"
 	"opChat/request"
 	"testing"
@@ -12,7 +11,7 @@ func TestUserCreate(t *testing.T) {
 		PhoneNumber: phoneNumber,
 		Password:    password,
 		DeviceID:    deviceID,
-	}, context.Background())
+	})
 	if e != nil {
 		t.Fatal("用户第一次注册失败：" + e.Error())
 	}
@@ -21,7 +20,7 @@ func TestUserCreate(t *testing.T) {
 		PhoneNumber: phoneNumber,
 		Password:    password,
 		DeviceID:    deviceID,
-	}, context.Background())
+	})
 	if e == nil {
 		t.Fatal("用户第二次注册成功")
 	}
@@ -29,7 +28,7 @@ func TestUserCreate(t *testing.T) {
 		PhoneNumber: phoneNumber2,
 		Password:    password,
 		DeviceID:    deviceID,
-	}, context.Background())
+	})
 	if e != nil {
 		t.Fatal("用户第一次注册失败：" + e.Error())
 	}
@@ -41,7 +40,7 @@ func TestUserLogin(t *testing.T) {
 		PhoneNumber: phoneNumber,
 		Password:    password,
 		DeviceID:    deviceID,
-	}, context.Background())
+	})
 	if e != nil {
 		t.Fatal("用户登录失败：" + e.Error())
 	}
@@ -49,7 +48,7 @@ func TestUserLogin(t *testing.T) {
 		PhoneNumber: wrongPhoneNumber,
 		Password:    password,
 		DeviceID:    deviceID,
-	}, context.Background())
+	})
 	if e == nil {
 		t.Fatal("用户使用错误手机号登录成功")
 	}
@@ -57,7 +56,7 @@ func TestUserLogin(t *testing.T) {
 		PhoneNumber: phoneNumber,
 		Password:    wrongPassword,
 		DeviceID:    deviceID,
-	}, context.Background())
+	})
 	if e == nil {
 		t.Fatal("用户使用错误密码登录成功")
 	}
@@ -65,7 +64,7 @@ func TestUserLogin(t *testing.T) {
 		PhoneNumber: phoneNumber,
 		Password:    password,
 		DeviceID:    wrongDeviceID,
-	}, context.Background())
+	})
 	if e == nil {
 		t.Fatal("用户使用错误设备码登录成功")
 	}
@@ -75,14 +74,14 @@ func TestUserSetPassword(t *testing.T) {
 	_, e := api.User.SetPassword(userID, &request.UserSetPassword{
 		OldPassword: password,
 		Password:    password,
-	}, context.Background())
+	})
 	if e != nil {
 		t.Fatal("修改密码失败：" + e.Error())
 	}
 	_, e = api.User.SetPassword(userID, &request.UserSetPassword{
 		OldPassword: wrongPassword,
 		Password:    password,
-	}, context.Background())
+	})
 	if e == nil {
 		t.Fatal("使用错误密码修改密码成功")
 	}
@@ -91,7 +90,7 @@ func TestUserSetPassword(t *testing.T) {
 func TestUserSetName(t *testing.T) {
 	_, e := api.User.SetName(userID, &request.UserSetName{
 		Name: "新用户名",
-	}, context.Background())
+	})
 	if e != nil {
 		t.Fatal("设置用户名失败" + e.Error())
 	}
