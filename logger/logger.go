@@ -1,7 +1,9 @@
 package logger
 
 import (
+	"fmt"
 	"opChat/errcode"
+	"runtime"
 
 	"github.com/kataras/golog"
 )
@@ -27,21 +29,22 @@ func NewLogger(filePath string, irisLogger *golog.Logger, toFile bool, toTermina
 	}, nil
 }
 
-func (l *Logger) Info(tag string, v ...interface{}) {
-	_ = l.log("info", tag, v)
+func (l *Logger) Info(v ...interface{}) {
+	_ = l.log("info", v)
 }
 
-func (l *Logger) Error(tag string, v ...interface{}) {
-	_ = l.log("error", tag, v)
+func (l *Logger) Error(v ...interface{}) {
+	_ = l.log("error", v)
 }
 
-func (l *Logger) log(level string, tag string, v ...interface{}) *errcode.Error {
+func (l *Logger) log(level string, v ...interface{}) *errcode.Error {
+	_, f, line, _ := runtime.Caller(2)
 	var e *errcode.Error
 	if l.toFile {
-		e = l.fileLog.write(level, tag, v)
+		e = l.fileLog.write(level, f+":"+fmt.Sprint(line), v)
 	}
 	if l.toTerminal {
-		l.terminalLog.write(level, tag, v)
+		l.terminalLog.write(level, f+":"+fmt.Sprint(line), v)
 	}
 	return e
 }

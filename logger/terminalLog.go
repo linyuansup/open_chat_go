@@ -14,10 +14,10 @@ func newTerminalLog(logger *golog.Logger) *terminalLog {
 
 func (t *terminalLog) write(level string, tag string, v ...interface{}) {
 	if level == "info" {
-		s, _ := formatter("info", tag, v...)
+		s, _ := formatter(tag, v...)
 		t.logger.Info(s)
 	} else {
-		s, _ := formatter("err", tag, v...)
+		s, _ := formatter(tag, v...)
 		t.logger.Error(s)
 	}
 }

@@ -28,8 +28,8 @@ func newFileLog(filePath string) (*fileLog, *errcode.Error) {
 	}, nil
 }
 
-func formatter(level string, tag string, v ...interface{}) (string, *errcode.Error) {
-	data := "{\"time\": \"" + time.Now().Format("2006-01-02 15:04:05") + "\",\"tag\":\"" + tag + "\",\"level\":\"" + level + "\",\"data\":"
+func formatter(tag string, v ...interface{}) (string, *errcode.Error) {
+	data := "{\"time\": \"" + time.Now().Format("2006-01-02 15:04:05") + "\",\"position\":\"" + tag + "\",\"data\":"
 	for _, ele := range v {
 		marshal, err := json.Marshal(ele)
 		if err != nil {
