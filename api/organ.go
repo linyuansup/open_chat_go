@@ -307,8 +307,12 @@ func (o *organ) Exit(uid int, request *request.OrganExit, ctx context.Context) (
 		group := entity.Group{
 			ID:      uint(request.ID),
 		}
-		err := tx.Where("creator = ?", uid).First(&group).Error
-		if err == nil {
+		err := tx.First(&group).Error
+		if err != nil {
+			tx.Rollback()
+			return nil, errcode.NoGroupFound
+		}
+		if group.Creator == uint(uid) {
 			tx.Rollback()
 			return nil, errcode.UserIsCreator
 		}
@@ -333,12 +337,18 @@ func (o *organ) Exit(uid int, request *request.OrganExit, ctx context.Context) (
 			tx.Rollback()
 			return nil, errcode.DeleteDataError.WithDetail(err.Error())
 		}
-		err = tx.Commit().Error
+	} else {
+		user := entity.User {
+			ID: uint(request.ID),
+		}
+		err = tx.First(&user).Error
 		if err != nil {
 			tx.Rollback()
-			return nil, errcode.CommitError.WithDetail(err.Error())
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, errcode.NoUserRequestFound
+			}
+			return nil, errcode.FindDataError.WithDetail(err.Error())
 		}
-	} else {
 		friend := entity.Friend{
 			From: uid,
 			To:   request.ID,
@@ -352,7 +362,7 @@ func (o *organ) Exit(uid int, request *request.OrganExit, ctx context.Context) (
 			err = tx.First(&friend).Error
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				tx.Rollback()
-				return nil, errcode.UserNotInGroup
+				return nil, errcode.UserNotFriend
 			}
 			if err != nil {
 				tx.Rollback()
@@ -365,7 +375,7 @@ func (o *organ) Exit(uid int, request *request.OrganExit, ctx context.Context) (
 		}
 		if !friend.Grant {
 			tx.Rollback()
-			return nil, errcode.UserNotInGroup
+			return nil, errcode.UserNotFriend
 		}
 		err = tx.Delete(&friend).Error
 		if err != nil {
