@@ -18,6 +18,7 @@ func main() {
 	http.Register("/group/agree", true, api.Group.Agree)
 	http.Register("/group/setAdmin", true, api.Group.SetAdmin)
 	http.Register("/group/request", true, api.Group.Request)
+	http.Register("/group/disagree", true, api.Group.Disagree)
 
 	http.Register("/organ/join", true, api.Organ.Join)
 	http.Register("/organ/avatar", true, api.Organ.Avatar)

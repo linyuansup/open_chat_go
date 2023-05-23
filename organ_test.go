@@ -31,6 +31,12 @@ func TestOrganJoin(t *testing.T) {
 	if e == nil {
 		t.Fatal("第二次加入组织成功")
 	}
+	_, e = api.Organ.Join(userID3, &request.OrganJoin{
+		ID: groupID,
+	})
+	if e != nil {
+		t.Fatal("加入组织失败：" + e.Error())
+	}
 }
 
 func TestOrganAvatar(t *testing.T) {

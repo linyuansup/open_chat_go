@@ -96,3 +96,20 @@ func TestGroupRequest(t *testing.T) {
 		t.Fatal("获取请求失败：" + e.Error())
 	}
 }
+
+func TestGroupDisgree(t *testing.T) {
+	_, e := api.Group.Disagree(userID, &request.GroupDisagree{
+		UserID:  userID3,
+		GroupID: groupID,
+	})
+	if e != nil {
+		t.Fatal("拒绝请求失败：" + e.Error())
+	}
+	_, e = api.Group.Disagree(userID, &request.GroupDisagree{
+		UserID:  userID3,
+		GroupID: groupID,
+	})
+	if e == nil {
+		t.Fatal("拒绝重复请求成功")
+	}
+}

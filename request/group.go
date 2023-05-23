@@ -24,3 +24,8 @@ type GroupRemoveAdmin struct {
 }
 
 type GroupRequest struct{}
+
+type GroupDisagree struct{
+	GroupID int `json:"groupID" validate:"len=9"`
+	UserID  int `json:"userID" validate:"len=9"`
+}
