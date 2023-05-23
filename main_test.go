@@ -50,7 +50,8 @@ func TestRunner(t *testing.T) {
 		!t.Run("TestUserSetName", TestUserSetName) ||
 		!t.Run("TestOrganExit", TestOrganExit) ||
 		!t.Run("TestGroupRequest", TestGroupRequest) ||
-		!t.Run("TestGroupDisgree", TestGroupDisgree) {
+		!t.Run("TestGroupDisgree", TestGroupDisgree) ||
+		!t.Run("TestGroupSetName", TestGroupSetName) {
 		t.Fatal()
 	}
 }

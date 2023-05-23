@@ -113,3 +113,13 @@ func TestGroupDisgree(t *testing.T) {
 		t.Fatal("拒绝重复请求成功")
 	}
 }
+
+func TestGroupSetName(t *testing.T) {
+	_, e := api.Group.SetName(userID, &request.GroupSetName{
+		ID:   groupID,
+		Name: "新名称",
+	})
+	if e != nil {
+		t.Fatal("设置名称失败：" + e.Error())
+	}
+}

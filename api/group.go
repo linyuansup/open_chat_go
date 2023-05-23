@@ -385,3 +385,52 @@ func (g *group) Disagree(uid int, request *request.GroupDisagree) (*response.Res
 		Data:    &response.GroupDisagree{},
 	}, nil
 }
+
+func (g *group) SetName(uid int, request *request.GroupSetName) (*response.Response[response.GroupSetName], *errcode.Error) {
+	tx := global.Database.Begin()
+	group := entity.Group{
+		ID: uint(request.ID),
+	}
+	err := tx.First(&group).Error
+	if err != nil {
+		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errcode.NoGroupFound
+		}
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	if uid != int(group.Creator) {
+		member := entity.Member{
+			Group: request.ID,
+			User:  uid,
+		}
+		err = tx.First(&member).Error
+		if err != nil {
+			tx.Rollback()
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, errcode.NoRequest
+			}
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		if !member.Admin {
+			tx.Rollback()
+			return nil, errcode.UserIsNotAdmin
+		}
+	}
+	group.Name = request.Name
+	err = tx.Save(&group).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.UpdateDataError.WithDetail(err.Error())
+	}
+	err = tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.CommitError.WithDetail(err.Error())
+	}
+	return &response.Response[response.GroupSetName]{
+		Code:    200,
+		Message: "修改成功",
+		Data:    &response.GroupSetName{},
+	}, nil
+}

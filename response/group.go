@@ -17,3 +17,5 @@ type GroupDisagree struct{}
 type GroupRequest struct {
 	Request []Request `json:"request"`
 }
+
+type GroupSetName struct{}
