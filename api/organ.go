@@ -373,6 +373,11 @@ func (o *organ) Exit(uid int, request *request.OrganExit, ctx context.Context) (
 			return nil, errcode.DeleteDataError.WithDetail(err.Error())
 		}
 	}
+	err = tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.CommitError.WithDetail(err.Error())
+	}
 	return &response.Response[response.OrganExit]{
 		Code:    200,
 		Message: "退出成功",
