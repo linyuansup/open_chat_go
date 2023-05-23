@@ -40,7 +40,8 @@ func TestRunner(t *testing.T) {
 		!t.Run("TestOrganJoin", TestOrganJoin) ||
 		!t.Run("TestGroupAgree", TestGroupAgree) ||
 		!t.Run("TestGroupSetAdmin", TestGroupSetAdmin) ||
-		!t.Run("TestGroupRemoveAdmin", TestGroupRemoveAdmin) {
+		!t.Run("TestGroupRemoveAdmin", TestGroupRemoveAdmin) ||
+		!t.Run("TestOrganAvatar", TestOrganAvatar) {
 		t.Fatal()
 	}
 }
