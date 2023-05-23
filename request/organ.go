@@ -17,3 +17,7 @@ type OrganSetAvatar struct {
 type OrganName struct {
 	ID int `json:"id" validate:"len=9"`
 }
+
+type OrganExit struct {
+	ID int `json:"id" validate:"len=9"`
+}

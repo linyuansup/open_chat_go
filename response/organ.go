@@ -14,3 +14,6 @@ type OrganSetAvatar struct {
 type OrganName struct {
 	Name string `json:"name"`
 }
+
+type OrganExit struct {
+}

@@ -88,3 +88,12 @@ func TestOrganName(t *testing.T) {
 		t.Fatal("用户名错误：" + res.Data.Name)
 	}
 }
+
+func TestOrganExit(t *testing.T) {
+	_, e := api.Organ.Exit(userID2, &request.OrganExit{
+		ID: groupID,
+	}, context.Background())
+	if e != nil {
+		t.Fatal("退出组织失败：" + e.Error())
+	}
+}

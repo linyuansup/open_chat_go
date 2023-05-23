@@ -299,3 +299,83 @@ func (o *organ) Name(uid int, request *request.OrganName, ctx context.Context) (
 		},
 	}, nil
 }
+
+func (o *organ) Exit(uid int, request *request.OrganExit, ctx context.Context) (*response.Response[response.OrganExit], *errcode.Error) {
+	tx := global.Database.Begin()
+	var err error
+	if request.ID >= 600000000 {
+		group := entity.Group{
+			ID:      uint(request.ID),
+		}
+		err := tx.Where("creator = ?", uid).First(&group).Error
+		if err == nil {
+			tx.Rollback()
+			return nil, errcode.UserIsCreator
+		}
+		member := entity.Member{
+			User:  uid,
+			Group: request.ID,
+		}
+		err = tx.First(&member).Error
+		if err != nil {
+			tx.Rollback()
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, errcode.UserNotInGroup
+			}
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		if !member.Grant {
+			tx.Rollback()
+			return nil, errcode.UserNotInGroup
+		}
+		err = tx.Delete(&member).Error
+		if err != nil {
+			tx.Rollback()
+			return nil, errcode.DeleteDataError.WithDetail(err.Error())
+		}
+		err = tx.Commit().Error
+		if err != nil {
+			tx.Rollback()
+			return nil, errcode.CommitError.WithDetail(err.Error())
+		}
+	} else {
+		friend := entity.Friend{
+			From: uid,
+			To:   request.ID,
+		}
+		err = tx.First(&friend).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			friend = entity.Friend{
+				From: request.ID,
+				To:   uid,
+			}
+			err = tx.First(&friend).Error
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				tx.Rollback()
+				return nil, errcode.UserNotInGroup
+			}
+			if err != nil {
+				tx.Rollback()
+				return nil, errcode.FindDataError.WithDetail(err.Error())
+			}
+		}
+		if err != nil {
+			tx.Rollback()
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		if !friend.Grant {
+			tx.Rollback()
+			return nil, errcode.UserNotInGroup
+		}
+		err = tx.Delete(&friend).Error
+		if err != nil {
+			tx.Rollback()
+			return nil, errcode.DeleteDataError.WithDetail(err.Error())
+		}
+	}
+	return &response.Response[response.OrganExit]{
+		Code:    200,
+		Message: "退出成功",
+		Data:    &response.OrganExit{},
+	}, nil
+}
