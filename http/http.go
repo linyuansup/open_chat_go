@@ -1,7 +1,6 @@
 package http
 
 import (
-	"context"
 	"crypto/md5"
 	"encoding/base64"
 	"encoding/json"
@@ -17,7 +16,7 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-func Register[req any, res any](path string, userCheck bool, action func(uid int, request *req, ctx context.Context) (*response.Response[res], *errcode.Error)) {
+func Register[req any, res any](path string, userCheck bool, action func(uid int, request *req) (*response.Response[res], *errcode.Error)) {
 	global.App.Post(path, func(c iris.Context) {
 		key := ""
 		userAgentFromClient := c.GetHeader("User-Agent")
@@ -75,7 +74,7 @@ func Register[req any, res any](path string, userCheck bool, action func(uid int
 			return
 		}
 		global.Log.Info("request", "id = "+fmt.Sprint(intID) +", data = ", fmt.Sprintf("%+v", unm))
-		res, e := action(intID, &unm, c.Request().Context())
+		res, e := action(intID, &unm)
 		if e != nil {
 			errorResponse(&c, e, key)
 			return

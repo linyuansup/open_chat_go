@@ -5,3 +5,8 @@ type Response[T any] struct {
 	Message string `json:"message"`
 	Data    *T     `json:"data"`
 }
+
+type Request struct {
+	ID      int `json:"id"`
+	GroupID int `json:"groupID"`
+}

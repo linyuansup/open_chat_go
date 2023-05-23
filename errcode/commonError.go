@@ -18,4 +18,6 @@ var (
 	UserIsMember            = NewError(20000016, "用户是成员", 400)
 	NoUserRequestFound      = NewError(20000017, "找不到用户", 400)
 	UserIsNotAdmin          = NewError(20000018, "用户不是管理员", 400)
+	UserNotFriend           = NewError(20000019, "用户不是好友", 400)
+	UserIsFriend            = NewError(20000020, "用户是好友", 400)
 )

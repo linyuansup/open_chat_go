@@ -2,15 +2,18 @@ package response
 
 type OrganJoinResponse struct{}
 
-type OrganAvatarResponse struct {
+type OrganAvatar struct {
 	File string `json:"file"`
 	Ex   string `json:"ex"`
 }
 
-type OrganSetAvatarResponse struct {
+type OrganSetAvatar struct {
 	Name string `json:"name"`
 }
 
-type OrganNameResponse struct {
+type OrganName struct {
 	Name string `json:"name"`
+}
+
+type OrganExit struct {
 }

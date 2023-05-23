@@ -9,6 +9,7 @@ import (
 const (
 	phoneNumber      = "19556172642"
 	phoneNumber2     = "19556172644"
+	phoneNumber3     = "19556172645"
 	wrongPhoneNumber = "19556172643"
 	password         = "81a0ad68ca3e7943db8833dc48927e2f"
 	wrongPassword    = "81a0ad68ca3e7943db8833dc48927e2d"
@@ -20,6 +21,7 @@ const (
 var (
 	userID   int
 	userID2  int
+	userID3  int
 	groupID  int
 	groupID2 int
 )
@@ -44,7 +46,14 @@ func TestRunner(t *testing.T) {
 		!t.Run("TestGroupSetAdmin", TestGroupSetAdmin) ||
 		!t.Run("TestGroupRemoveAdmin", TestGroupRemoveAdmin) ||
 		!t.Run("TestOrganAvatar", TestOrganAvatar) ||
-		!t.Run("TestOrganSetAvatar", TestOrganSetAvatar) {
+		!t.Run("TestOrganSetAvatar", TestOrganSetAvatar) ||
+		!t.Run("TestUserSetName", TestUserSetName) ||
+		!t.Run("TestOrganExit", TestOrganExit) ||
+		!t.Run("TestGroupRequest", TestGroupRequest) ||
+		!t.Run("TestGroupDisgree", TestGroupDisgree) ||
+		!t.Run("TestGroupSetName", TestGroupSetName) ||
+		!t.Run("TestFriendAgree", TestFriendAgree) ||
+		!t.Run("TestFriendDisgree", TestFriendDisgree) {
 		t.Fatal()
 	}
 }

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"errors"
 	"opChat/entity"
 	"opChat/errcode"
@@ -17,7 +16,7 @@ type organ struct{}
 
 var Organ organ
 
-func (o *organ) Join(uid int, request *request.OrganJoinRequest, ctx context.Context) (*response.Response[response.OrganJoinResponse], *errcode.Error) {
+func (o *organ) Join(uid int, request *request.OrganJoin) (*response.Response[response.OrganJoinResponse], *errcode.Error) {
 	tx := global.Database.Begin()
 	var err error
 	if request.ID >= 600000000 {
@@ -112,7 +111,7 @@ func (o *organ) Join(uid int, request *request.OrganJoinRequest, ctx context.Con
 	}, nil
 }
 
-func (o *organ) Avatar(uid int, request *request.OrganAvatarRequest, ctx context.Context) (*response.Response[response.OrganAvatarResponse], *errcode.Error) {
+func (o *organ) Avatar(uid int, request *request.OrganAvatar) (*response.Response[response.OrganAvatar], *errcode.Error) {
 	tx := global.Database.Begin()
 	var (
 		avatarName string
@@ -158,17 +157,17 @@ func (o *organ) Avatar(uid int, request *request.OrganAvatarRequest, ctx context
 		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
-	return &response.Response[response.OrganAvatarResponse]{
+	return &response.Response[response.OrganAvatar]{
 		Code:    200,
 		Message: "获取成功",
-		Data: &response.OrganAvatarResponse{
+		Data: &response.OrganAvatar{
 			File: util.Base64Encode(file),
 			Ex:   avatarEx,
 		},
 	}, nil
 }
 
-func (o *organ) SetAvatar(uid int, request *request.OrganSetAvatarRequest, ctx context.Context) (*response.Response[response.OrganSetAvatarResponse], *errcode.Error) {
+func (o *organ) SetAvatar(uid int, request *request.OrganSetAvatar) (*response.Response[response.OrganSetAvatar], *errcode.Error) {
 	tx := global.Database.Begin()
 	var err error
 	file, e := util.Base64Decode([]byte(request.File))
@@ -244,16 +243,16 @@ func (o *organ) SetAvatar(uid int, request *request.OrganSetAvatarRequest, ctx c
 		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
-	return &response.Response[response.OrganSetAvatarResponse]{
+	return &response.Response[response.OrganSetAvatar]{
 		Code:    200,
 		Message: "更改头像成功",
-		Data: &response.OrganSetAvatarResponse{
+		Data: &response.OrganSetAvatar{
 			Name: name,
 		},
 	}, nil
 }
 
-func (o *organ) Name(uid int, request *request.OrganNameRequest, ctx context.Context) (*response.Response[response.OrganNameResponse], *errcode.Error) {
+func (o *organ) Name(uid int, request *request.OrganName) (*response.Response[response.OrganName], *errcode.Error) {
 	tx := global.Database.Begin()
 	var (
 		name string
@@ -291,11 +290,106 @@ func (o *organ) Name(uid int, request *request.OrganNameRequest, ctx context.Con
 		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
-	return &response.Response[response.OrganNameResponse]{
+	return &response.Response[response.OrganName]{
 		Code:    200,
 		Message: "获取成功",
-		Data: &response.OrganNameResponse{
+		Data: &response.OrganName{
 			Name: name,
 		},
+	}, nil
+}
+
+func (o *organ) Exit(uid int, request *request.OrganExit) (*response.Response[response.OrganExit], *errcode.Error) {
+	tx := global.Database.Begin()
+	var err error
+	if request.ID >= 600000000 {
+		group := entity.Group{
+			ID:      uint(request.ID),
+		}
+		err := tx.First(&group).Error
+		if err != nil {
+			tx.Rollback()
+			return nil, errcode.NoGroupFound
+		}
+		if group.Creator == uint(uid) {
+			tx.Rollback()
+			return nil, errcode.UserIsCreator
+		}
+		member := entity.Member{
+			User:  uid,
+			Group: request.ID,
+		}
+		err = tx.First(&member).Error
+		if err != nil {
+			tx.Rollback()
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, errcode.UserNotInGroup
+			}
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		if !member.Grant {
+			tx.Rollback()
+			return nil, errcode.UserNotInGroup
+		}
+		err = tx.Delete(&member).Error
+		if err != nil {
+			tx.Rollback()
+			return nil, errcode.DeleteDataError.WithDetail(err.Error())
+		}
+	} else {
+		user := entity.User {
+			ID: uint(request.ID),
+		}
+		err = tx.First(&user).Error
+		if err != nil {
+			tx.Rollback()
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, errcode.NoUserRequestFound
+			}
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		friend := entity.Friend{
+			From: uid,
+			To:   request.ID,
+		}
+		err = tx.First(&friend).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			friend = entity.Friend{
+				From: request.ID,
+				To:   uid,
+			}
+			err = tx.First(&friend).Error
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				tx.Rollback()
+				return nil, errcode.UserNotFriend
+			}
+			if err != nil {
+				tx.Rollback()
+				return nil, errcode.FindDataError.WithDetail(err.Error())
+			}
+		}
+		if err != nil {
+			tx.Rollback()
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		if !friend.Grant {
+			tx.Rollback()
+			return nil, errcode.UserNotFriend
+		}
+		err = tx.Delete(&friend).Error
+		if err != nil {
+			tx.Rollback()
+			return nil, errcode.DeleteDataError.WithDetail(err.Error())
+		}
+	}
+	err = tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.CommitError.WithDetail(err.Error())
+	}
+	return &response.Response[response.OrganExit]{
+		Code:    200,
+		Message: "退出成功",
+		Data:    &response.OrganExit{},
 	}, nil
 }

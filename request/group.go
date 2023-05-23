@@ -1,24 +1,36 @@
 package request
 
-type GroupCreateRequest struct {
+type GroupCreate struct {
 	Name string `json:"name" validate:"required"`
 }
 
-type GroupDeleteRequest struct {
+type GroupDelete struct {
 	ID int `json:"id" validate:"len=9"`
 }
 
-type GroupAgreeRequest struct {
+type GroupAgree struct {
 	GroupID int `json:"groupID" validate:"len=9"`
 	UserID  int `json:"userID" validate:"len=9"`
 }
 
-type GroupSetAdminRequest struct {
+type GroupSetAdmin struct {
 	GroupID int `json:"groupID" validate:"len=9"`
 	UserID  int `json:"userID" validate:"len=9"`
 }
 
-type GroupRemoveAdminRequest struct {
+type GroupRemoveAdmin struct {
 	GroupID int `json:"groupID" validate:"len=9"`
 	UserID  int `json:"userID" validate:"len=9"`
+}
+
+type GroupRequest struct{}
+
+type GroupDisagree struct {
+	GroupID int `json:"groupID" validate:"len=9"`
+	UserID  int `json:"userID" validate:"len=9"`
+}
+
+type GroupSetName struct {
+	ID   int    `json:"id" validate:"len=9"`
+	Name string `json:"name" validate:"required"`
 }
