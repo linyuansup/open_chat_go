@@ -109,3 +109,31 @@ func (u *user) SetPassword(uid int, request *request.UserSetPassword, ctx contex
 		Data:    &response.UserSetPassword{},
 	}, nil
 }
+
+func (u *user) SetName(uid int, request *request.UserSetName, ctx context.Context) (*response.Response[response.UserSetName], *errcode.Error) {
+	tx := global.Database.Begin()
+	user := entity.User{
+		ID: uint(uid),
+	}
+	err := tx.First(&user).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	user.Username = request.Name
+	err = tx.Save(&user).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.UpdateDataError.WithDetail(err.Error())
+	}
+	err = tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.CommitError.WithDetail(err.Error())
+	}
+	return &response.Response[response.UserSetName]{
+		Code:    200,
+		Message: "更新用户名成功",
+		Data:    &response.UserSetName{},
+	}, nil
+}

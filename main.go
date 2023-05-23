@@ -12,6 +12,7 @@ func main() {
 	http.Register("/user/create", false, api.User.Create)
 	http.Register("/user/login", false, api.User.Login)
 	http.Register("/user/setPassword", true, api.User.SetPassword)
+	http.Register("/user/setName", true, api.User.SetName)
 
 	http.Register("/group/create", true, api.Group.Create)
 	http.Register("/group/agree", true, api.Group.Agree)

@@ -87,3 +87,12 @@ func TestUserSetPassword(t *testing.T) {
 		t.Fatal("使用错误密码修改密码成功")
 	}
 }
+
+func TestUserSetName(t *testing.T) {
+	_, e := api.User.SetName(userID, &request.UserSetName{
+		Name: "新用户名",
+	}, context.Background())
+	if e != nil {
+		t.Fatal("设置用户名失败" + e.Error())
+	}
+}
