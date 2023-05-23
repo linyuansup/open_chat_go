@@ -17,7 +17,7 @@ type organ struct{}
 
 var Organ organ
 
-func (o *organ) Join(uid int, request *request.OrganJoinRequest, ctx context.Context) (*response.Response[response.OrganJoinResponse], *errcode.Error) {
+func (o *organ) Join(uid int, request *request.OrganJoin, ctx context.Context) (*response.Response[response.OrganJoinResponse], *errcode.Error) {
 	tx := global.Database.Begin()
 	var err error
 	if request.ID >= 600000000 {
@@ -112,7 +112,7 @@ func (o *organ) Join(uid int, request *request.OrganJoinRequest, ctx context.Con
 	}, nil
 }
 
-func (o *organ) Avatar(uid int, request *request.OrganAvatarRequest, ctx context.Context) (*response.Response[response.OrganAvatarResponse], *errcode.Error) {
+func (o *organ) Avatar(uid int, request *request.OrganAvatar, ctx context.Context) (*response.Response[response.OrganAvatar], *errcode.Error) {
 	tx := global.Database.Begin()
 	var (
 		avatarName string
@@ -158,17 +158,17 @@ func (o *organ) Avatar(uid int, request *request.OrganAvatarRequest, ctx context
 		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
-	return &response.Response[response.OrganAvatarResponse]{
+	return &response.Response[response.OrganAvatar]{
 		Code:    200,
 		Message: "获取成功",
-		Data: &response.OrganAvatarResponse{
+		Data: &response.OrganAvatar{
 			File: util.Base64Encode(file),
 			Ex:   avatarEx,
 		},
 	}, nil
 }
 
-func (o *organ) SetAvatar(uid int, request *request.OrganSetAvatarRequest, ctx context.Context) (*response.Response[response.OrganSetAvatarResponse], *errcode.Error) {
+func (o *organ) SetAvatar(uid int, request *request.OrganSetAvatar, ctx context.Context) (*response.Response[response.OrganSetAvatar], *errcode.Error) {
 	tx := global.Database.Begin()
 	var err error
 	file, e := util.Base64Decode([]byte(request.File))
@@ -244,16 +244,16 @@ func (o *organ) SetAvatar(uid int, request *request.OrganSetAvatarRequest, ctx c
 		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
-	return &response.Response[response.OrganSetAvatarResponse]{
+	return &response.Response[response.OrganSetAvatar]{
 		Code:    200,
 		Message: "更改头像成功",
-		Data: &response.OrganSetAvatarResponse{
+		Data: &response.OrganSetAvatar{
 			Name: name,
 		},
 	}, nil
 }
 
-func (o *organ) Name(uid int, request *request.OrganNameRequest, ctx context.Context) (*response.Response[response.OrganNameResponse], *errcode.Error) {
+func (o *organ) Name(uid int, request *request.OrganName, ctx context.Context) (*response.Response[response.OrganName], *errcode.Error) {
 	tx := global.Database.Begin()
 	var (
 		name string
@@ -291,10 +291,10 @@ func (o *organ) Name(uid int, request *request.OrganNameRequest, ctx context.Con
 		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
-	return &response.Response[response.OrganNameResponse]{
+	return &response.Response[response.OrganName]{
 		Code:    200,
 		Message: "获取成功",
-		Data: &response.OrganNameResponse{
+		Data: &response.OrganName{
 			Name: name,
 		},
 	}, nil

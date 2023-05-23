@@ -1,13 +1,13 @@
 package response
 
-type GroupCreateResponse struct {
+type GroupCreate struct {
 	ID int `json:"id"`
 }
 
-type GroupDeleteResponse struct{}
+type GroupDelete struct{}
 
-type GroupAgreeResponse struct{}
+type GroupAgree struct{}
 
-type GroupSetAdminResponse struct{}
+type GroupSetAdmin struct{}
 
-type GroupRemoveAdminResponse struct{}
+type GroupRemoveAdmin struct{}

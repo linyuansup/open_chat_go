@@ -1,19 +1,19 @@
 package request
 
-type OrganJoinRequest struct {
+type OrganJoin struct {
 	ID int `json:"id" validate:"len=9"`
 }
 
-type OrganAvatarRequest struct {
+type OrganAvatar struct {
 	ID int `json:"id" validate:"len=9"`
 }
 
-type OrganSetAvatarRequest struct {
+type OrganSetAvatar struct {
 	ID   int    `json:"id" validate:"len=9"`
 	File string `json:"file" validate:"required"`
 	Ex   string `json:"ex" validate:"required"`
 }
 
-type OrganNameRequest struct {
+type OrganName struct {
 	ID int `json:"id" validate:"len=9"`
 }

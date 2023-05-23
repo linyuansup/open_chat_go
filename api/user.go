@@ -17,7 +17,7 @@ type user struct{}
 
 var User user
 
-func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.Context) (*response.Response[response.UserCreateResponse], *errcode.Error) {
+func (u *user) Create(uid int, request *request.UserCreate, ctx context.Context) (*response.Response[response.UserCreate], *errcode.Error) {
 	tx := global.Database.Begin()
 	err := tx.Where("phone_number = ?", request.PhoneNumber).First(&entity.User{}).Error
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -43,16 +43,16 @@ func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.C
 		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
-	return &response.Response[response.UserCreateResponse]{
+	return &response.Response[response.UserCreate]{
 		Code:    200,
 		Message: "注册成功",
-		Data: &response.UserCreateResponse{
+		Data: &response.UserCreate{
 			ID: targetUser.ID,
 		},
 	}, nil
 }
 
-func (u *user) Login(uid int, request *request.UserLoginRequest, ctx context.Context) (*response.Response[response.UserLoginResponse], *errcode.Error) {
+func (u *user) Login(uid int, request *request.UserLogin, ctx context.Context) (*response.Response[response.UserLogin], *errcode.Error) {
 	var targetUser entity.User
 	e := global.Database.Where("phone_number = ?", request.PhoneNumber).Find(&targetUser)
 	if e.RowsAffected == 0 {
@@ -67,16 +67,16 @@ func (u *user) Login(uid int, request *request.UserLoginRequest, ctx context.Con
 	if targetUser.DeviceID != request.DeviceID {
 		return nil, errcode.WrongDeviceID
 	}
-	return &response.Response[response.UserLoginResponse]{
+	return &response.Response[response.UserLogin]{
 		Code:    200,
 		Message: "登录成功",
-		Data: &response.UserLoginResponse{
+		Data: &response.UserLogin{
 			ID: targetUser.ID,
 		},
 	}, nil
 }
 
-func (u *user) SetPassword(uid int, request *request.UserSetPasswordRequest, ctx context.Context) (*response.Response[response.UserSetPasswordResponse], *errcode.Error) {
+func (u *user) SetPassword(uid int, request *request.UserSetPassword, ctx context.Context) (*response.Response[response.UserSetPassword], *errcode.Error) {
 	tx := global.Database.Begin()
 	targetUser := entity.User{
 		ID: uint(uid),
@@ -103,9 +103,9 @@ func (u *user) SetPassword(uid int, request *request.UserSetPasswordRequest, ctx
 		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
-	return &response.Response[response.UserSetPasswordResponse]{
+	return &response.Response[response.UserSetPassword]{
 		Code:    200,
 		Message: "更改密码成功",
-		Data:    &response.UserSetPasswordResponse{},
+		Data:    &response.UserSetPassword{},
 	}, nil
 }

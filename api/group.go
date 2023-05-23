@@ -17,7 +17,7 @@ type group struct{}
 
 var Group group
 
-func (g *group) Create(uid int, request *request.GroupCreateRequest, ctx context.Context) (*response.Response[response.GroupCreateResponse], *errcode.Error) {
+func (g *group) Create(uid int, request *request.GroupCreate, ctx context.Context) (*response.Response[response.GroupCreate], *errcode.Error) {
 	tx := global.Database.Begin()
 	id := atomic.AddInt32(&global.NowGroupID, 1)
 	e := tx.Create(&entity.Group{
@@ -36,16 +36,16 @@ func (g *group) Create(uid int, request *request.GroupCreateRequest, ctx context
 		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
-	return &response.Response[response.GroupCreateResponse]{
+	return &response.Response[response.GroupCreate]{
 		Code:    200,
 		Message: "创建群聊成功",
-		Data: &response.GroupCreateResponse{
+		Data: &response.GroupCreate{
 			ID: int(id),
 		},
 	}, nil
 }
 
-func (g *group) Delete(uid int, request *request.GroupDeleteRequest, ctx context.Context) (*response.Response[response.GroupDeleteResponse], *errcode.Error) {
+func (g *group) Delete(uid int, request *request.GroupDelete, ctx context.Context) (*response.Response[response.GroupDelete], *errcode.Error) {
 	tx := global.Database.Begin()
 	targetGroup := entity.Group{
 		ID: uint(request.ID),
@@ -82,14 +82,14 @@ func (g *group) Delete(uid int, request *request.GroupDeleteRequest, ctx context
 		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
-	return &response.Response[response.GroupDeleteResponse]{
+	return &response.Response[response.GroupDelete]{
 		Code:    200,
 		Message: "删除群聊成功",
-		Data:    &response.GroupDeleteResponse{},
+		Data:    &response.GroupDelete{},
 	}, nil
 }
 
-func (g *group) Agree(uid int, request *request.GroupAgreeRequest, ctx context.Context) (*response.Response[response.GroupAgreeResponse], *errcode.Error) {
+func (g *group) Agree(uid int, request *request.GroupAgree, ctx context.Context) (*response.Response[response.GroupAgree], *errcode.Error) {
 	tx := global.Database.Begin()
 	targetGroup := entity.Group{
 		ID: uint(request.GroupID),
@@ -147,14 +147,14 @@ func (g *group) Agree(uid int, request *request.GroupAgreeRequest, ctx context.C
 		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
-	return &response.Response[response.GroupAgreeResponse]{
+	return &response.Response[response.GroupAgree]{
 		Code:    200,
 		Message: "操作成功",
-		Data:    &response.GroupAgreeResponse{},
+		Data:    &response.GroupAgree{},
 	}, nil
 }
 
-func (g *group) SetAdmin(uid int, request *request.GroupSetAdminRequest, ctx context.Context) (*response.Response[response.GroupSetAdminResponse], *errcode.Error) {
+func (g *group) SetAdmin(uid int, request *request.GroupSetAdmin, ctx context.Context) (*response.Response[response.GroupSetAdmin], *errcode.Error) {
 	tx := global.Database.Begin()
 	group := entity.Group{
 		ID: uint(request.GroupID),
@@ -205,14 +205,14 @@ func (g *group) SetAdmin(uid int, request *request.GroupSetAdminRequest, ctx con
 	if err != nil {
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
-	return &response.Response[response.GroupSetAdminResponse]{
+	return &response.Response[response.GroupSetAdmin]{
 		Code:    200,
 		Message: "设置成功",
-		Data:    &response.GroupSetAdminResponse{},
+		Data:    &response.GroupSetAdmin{},
 	}, nil
 }
 
-func (g *group) RemoveAdmin(uid int, request *request.GroupRemoveAdminRequest, ctx context.Context) (*response.Response[response.GroupRemoveAdminResponse], *errcode.Error) {
+func (g *group) RemoveAdmin(uid int, request *request.GroupRemoveAdmin, ctx context.Context) (*response.Response[response.GroupRemoveAdmin], *errcode.Error) {
 	tx := global.Database.Begin()
 	group := entity.Group{
 		ID: uint(request.GroupID),
@@ -259,9 +259,9 @@ func (g *group) RemoveAdmin(uid int, request *request.GroupRemoveAdminRequest, c
 	if err != nil {
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
-	return &response.Response[response.GroupRemoveAdminResponse]{
+	return &response.Response[response.GroupRemoveAdmin]{
 		Code:    200,
 		Message: "设置成功",
-		Data:    &response.GroupRemoveAdminResponse{},
+		Data:    &response.GroupRemoveAdmin{},
 	}, nil
 }

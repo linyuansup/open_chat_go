@@ -1,12 +1,15 @@
 package response
 
-type UserCreateResponse struct {
+type UserCreate struct {
 	ID uint `json:"id"`
 }
 
-type UserLoginResponse struct {
+type UserLogin struct {
 	ID uint `json:"id"`
 }
 
-type UserSetPasswordResponse struct {
+type UserSetPassword struct {
+}
+
+type UserSetName struct {
 }

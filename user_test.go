@@ -8,7 +8,7 @@ import (
 )
 
 func TestUserCreate(t *testing.T) {
-	res, e := api.User.Create(0, &request.UserCreateRequest{
+	res, e := api.User.Create(0, &request.UserCreate{
 		PhoneNumber: phoneNumber,
 		Password:    password,
 		DeviceID:    deviceID,
@@ -17,7 +17,7 @@ func TestUserCreate(t *testing.T) {
 		t.Fatal("用户第一次注册失败：" + e.Error())
 	}
 	userID = int(res.Data.ID)
-	_, e = api.User.Create(0, &request.UserCreateRequest{
+	_, e = api.User.Create(0, &request.UserCreate{
 		PhoneNumber: phoneNumber,
 		Password:    password,
 		DeviceID:    deviceID,
@@ -25,7 +25,7 @@ func TestUserCreate(t *testing.T) {
 	if e == nil {
 		t.Fatal("用户第二次注册成功")
 	}
-	res, e = api.User.Create(0, &request.UserCreateRequest{
+	res, e = api.User.Create(0, &request.UserCreate{
 		PhoneNumber: phoneNumber2,
 		Password:    password,
 		DeviceID:    deviceID,
@@ -37,7 +37,7 @@ func TestUserCreate(t *testing.T) {
 }
 
 func TestUserLogin(t *testing.T) {
-	_, e := api.User.Login(0, &request.UserLoginRequest{
+	_, e := api.User.Login(0, &request.UserLogin{
 		PhoneNumber: phoneNumber,
 		Password:    password,
 		DeviceID:    deviceID,
@@ -45,7 +45,7 @@ func TestUserLogin(t *testing.T) {
 	if e != nil {
 		t.Fatal("用户登录失败：" + e.Error())
 	}
-	_, e = api.User.Login(0, &request.UserLoginRequest{
+	_, e = api.User.Login(0, &request.UserLogin{
 		PhoneNumber: wrongPhoneNumber,
 		Password:    password,
 		DeviceID:    deviceID,
@@ -53,7 +53,7 @@ func TestUserLogin(t *testing.T) {
 	if e == nil {
 		t.Fatal("用户使用错误手机号登录成功")
 	}
-	_, e = api.User.Login(0, &request.UserLoginRequest{
+	_, e = api.User.Login(0, &request.UserLogin{
 		PhoneNumber: phoneNumber,
 		Password:    wrongPassword,
 		DeviceID:    deviceID,
@@ -61,7 +61,7 @@ func TestUserLogin(t *testing.T) {
 	if e == nil {
 		t.Fatal("用户使用错误密码登录成功")
 	}
-	_, e = api.User.Login(0, &request.UserLoginRequest{
+	_, e = api.User.Login(0, &request.UserLogin{
 		PhoneNumber: phoneNumber,
 		Password:    password,
 		DeviceID:    wrongDeviceID,
@@ -72,14 +72,14 @@ func TestUserLogin(t *testing.T) {
 }
 
 func TestUserSetPassword(t *testing.T) {
-	_, e := api.User.SetPassword(userID, &request.UserSetPasswordRequest{
+	_, e := api.User.SetPassword(userID, &request.UserSetPassword{
 		OldPassword: password,
 		Password:    password,
 	}, context.Background())
 	if e != nil {
 		t.Fatal("修改密码失败：" + e.Error())
 	}
-	_, e = api.User.SetPassword(userID, &request.UserSetPasswordRequest{
+	_, e = api.User.SetPassword(userID, &request.UserSetPassword{
 		OldPassword: wrongPassword,
 		Password:    password,
 	}, context.Background())
