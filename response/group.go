@@ -9,3 +9,5 @@ type GroupDeleteResponse struct{}
 type GroupAgreeResponse struct{}
 
 type GroupSetAdminResponse struct{}
+
+type GroupRemoveAdminResponse struct{}

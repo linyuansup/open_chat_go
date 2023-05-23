@@ -72,3 +72,20 @@ func TestGroupSetAdmin(t *testing.T) {
 		t.Fatal("重复设置管理员成功")
 	}
 }
+
+func TestGroupRemoveAdmin(t *testing.T) {
+	_, e := api.Group.RemoveAdmin(userID, &request.GroupRemoveAdminRequest{
+		UserID:  userID2,
+		GroupID: groupID,
+	}, context.Background())
+	if e != nil {
+		t.Fatal("取消管理员失败：" + e.Error())
+	}
+	_, e = api.Group.RemoveAdmin(userID, &request.GroupRemoveAdminRequest{
+		UserID:  userID2,
+		GroupID: groupID,
+	}, context.Background())
+	if e == nil {
+		t.Fatal("重复取消管理员成功")
+	}
+}

@@ -156,10 +156,10 @@ func (g *group) Agree(uid int, request *request.GroupAgreeRequest, ctx context.C
 
 func (g *group) SetAdmin(uid int, request *request.GroupSetAdminRequest, ctx context.Context) (*response.Response[response.GroupSetAdminResponse], *errcode.Error) {
 	tx := global.Database.Begin()
-	group := entity.Group {
-		ID: uint(uid),
+	group := entity.Group{
+		ID: uint(request.GroupID),
 	}
-	err := tx.Find(&group).Error
+	err := tx.First(&group).Error
 	if err != nil {
 		tx.Rollback()
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -171,12 +171,16 @@ func (g *group) SetAdmin(uid int, request *request.GroupSetAdminRequest, ctx con
 		tx.Rollback()
 		return nil, errcode.NoChangePermission
 	}
-	member := entity.Member {
-		User: request.UserID,
+	if uid == request.UserID {
+		tx.Rollback()
+		return nil, errcode.UserIsCreator
+	}
+	member := entity.Member{
+		User:  request.UserID,
 		Group: request.GroupID,
 	}
-	err = tx.Find(&member).Error
-	if err != nil{
+	err = tx.First(&member).Error
+	if err != nil {
 		tx.Rollback()
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errcode.UserNotInGroup
@@ -187,7 +191,7 @@ func (g *group) SetAdmin(uid int, request *request.GroupSetAdminRequest, ctx con
 		tx.Rollback()
 		return nil, errcode.UserNotInGroup
 	}
-	if !member.Admin {
+	if member.Admin {
 		tx.Rollback()
 		return nil, errcode.UserIsAdmin
 	}
@@ -205,5 +209,59 @@ func (g *group) SetAdmin(uid int, request *request.GroupSetAdminRequest, ctx con
 		Code:    200,
 		Message: "设置成功",
 		Data:    &response.GroupSetAdminResponse{},
+	}, nil
+}
+
+func (g *group) RemoveAdmin(uid int, request *request.GroupRemoveAdminRequest, ctx context.Context) (*response.Response[response.GroupRemoveAdminResponse], *errcode.Error) {
+	tx := global.Database.Begin()
+	group := entity.Group{
+		ID: uint(request.GroupID),
+	}
+	err := tx.First(&group).Error
+	if err != nil {
+		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errcode.NoGroupFound
+		}
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	if group.Creator != uint(uid) {
+		tx.Rollback()
+		return nil, errcode.NoChangePermission
+	}
+	member := entity.Member{
+		User:  request.UserID,
+		Group: request.GroupID,
+	}
+	err = tx.First(&member).Error
+	if err != nil {
+		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errcode.UserNotInGroup
+		}
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	if !member.Grant {
+		tx.Rollback()
+		return nil, errcode.UserNotInGroup
+	}
+	if !member.Admin {
+		tx.Rollback()
+		return nil, errcode.UserIsNotAdmin
+	}
+	member.Admin = false
+	err = tx.Save(&member).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.UpdateDataError.WithDetail(err.Error())
+	}
+	err = tx.Commit().Error
+	if err != nil {
+		return nil, errcode.CommitError.WithDetail(err.Error())
+	}
+	return &response.Response[response.GroupRemoveAdminResponse]{
+		Code:    200,
+		Message: "设置成功",
+		Data:    &response.GroupRemoveAdminResponse{},
 	}, nil
 }

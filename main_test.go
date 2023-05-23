@@ -38,7 +38,9 @@ func TestRunner(t *testing.T) {
 		!t.Run("TestGroupCreate", TestGroupCreate) ||
 		!t.Run("TestGroupDelete", TestGroupDelete) ||
 		!t.Run("TestOrganJoin", TestOrganJoin) ||
-		!t.Run("TestGroupAgree", TestGroupAgree) {
+		!t.Run("TestGroupAgree", TestGroupAgree) ||
+		!t.Run("TestGroupSetAdmin", TestGroupSetAdmin) ||
+		!t.Run("TestGroupRemoveAdmin", TestGroupRemoveAdmin) {
 		t.Fatal()
 	}
 }
