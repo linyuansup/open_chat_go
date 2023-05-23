@@ -408,9 +408,13 @@ func (g *group) SetName(uid int, request *request.GroupSetName) (*response.Respo
 		if err != nil {
 			tx.Rollback()
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, errcode.NoRequest
+				return nil, errcode.UserNotInGroup
 			}
 			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		if !member.Grant {
+			tx.Rollback()
+			return nil, errcode.UserNotInGroup
 		}
 		if !member.Admin {
 			tx.Rollback()
