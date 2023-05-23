@@ -27,6 +27,8 @@ func main() {
 	http.Register("/organ/name", true, api.Organ.Name)
 	http.Register("/organ/exut", true, api.Organ.Exit)
 
+	http.Register("/friend/agree", true, api.Friend.Agree)
+
 	e := global.StartServe()
 	if e != nil {
 		panic(e)
