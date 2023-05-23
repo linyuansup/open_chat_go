@@ -7,8 +7,8 @@ import (
 )
 
 type Member struct {
-	User      int
-	Group     int
+	User      int `gorm:"primarykey"`
+	Group     int `gorm:"primarykey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`

@@ -17,4 +17,5 @@ var (
 	AlreadyRequest          = NewError(20000015, "已存在申请", 400)
 	UserIsMember            = NewError(20000016, "用户是成员", 400)
 	NoUserRequestFound      = NewError(20000017, "找不到用户", 400)
+	UserIsNotAdmin          = NewError(20000018, "用户不是管理员", 400)
 )

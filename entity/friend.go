@@ -7,8 +7,8 @@ import (
 )
 
 type Friend struct {
-	From      int
-	To        int
+	From      int `gorm:"primarykey"`
+	To        int `gorm:"primaryKey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
