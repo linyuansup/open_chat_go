@@ -28,6 +28,7 @@ func main() {
 	http.Register("/organ/exut", true, api.Organ.Exit)
 
 	http.Register("/friend/agree", true, api.Friend.Agree)
+	http.Register("/friend/disagree", true, api.Friend.Disgree)
 
 	e := global.StartServe()
 	if e != nil {

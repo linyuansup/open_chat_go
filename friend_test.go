@@ -14,3 +14,12 @@ func TestFriendAgree(t *testing.T) {
 		t.Fatal("同意失败：" + e.Error())
 	}
 }
+
+func TestFriendDisgree(t *testing.T) {
+	_, e := api.Friend.Disgree(userID, &request.FriendDisgree{
+		ID: userID3,
+	})
+	if e != nil {
+		t.Fatal("不同意失败：" + e.Error())
+	}
+}
