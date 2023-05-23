@@ -20,7 +20,7 @@ var Organ organ
 func (o *organ) Join(uid int, request *request.OrganJoinRequest, ctx context.Context) (*response.Response[response.OrganJoinResponse], *errcode.Error) {
 	tx := global.Database.Begin()
 	var err error
-	if request.ID/100000000 >= 6 {
+	if request.ID >= 600000000 {
 		targetGroup := entity.Group{
 			ID: uint(request.ID),
 		}
@@ -119,7 +119,7 @@ func (o *organ) Avatar(uid int, request *request.OrganAvatarRequest, ctx context
 		avatarEx   string
 		err        error
 	)
-	if request.ID/100000000 >= 6 {
+	if request.ID >= 600000000 {
 		group := entity.Group{
 			ID: uint(request.ID),
 		}
@@ -158,4 +158,23 @@ func (o *organ) Avatar(uid int, request *request.OrganAvatarRequest, ctx context
 			Ex:   avatarEx,
 		},
 	}, nil
+}
+
+func (o *organ) SetAvatar(uid int, request *request.OrganSetAvatarRequest, ctx context.Context) (*response.Response[response.OrganSetAvatarResponse], *errcode.Error) {
+	tx := global.Database.Begin()
+	var err error
+	if request.ID >= 600000000 {
+		group := entity.Group {
+			ID: uint(request.ID),
+		}
+		err = tx.First(&group).Error
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, errcode.NoGroupFound
+			}
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+	} else {
+		
+	}
 }
