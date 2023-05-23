@@ -74,6 +74,7 @@ func Register[req any, res any](path string, userCheck bool, action func(uid int
 			errorResponse(&c, errcode.ValidatorError, key)
 			return
 		}
+		global.Log.Info("request", "id = "+fmt.Sprint(intID) +", data = ", fmt.Sprintf("%+v", unm))
 		res, e := action(intID, &unm, c.Request().Context())
 		if e != nil {
 			errorResponse(&c, e, key)
@@ -111,7 +112,7 @@ func errorResponse(c *iris.Context, err *errcode.Error, key string) {
 			result = []byte(fmt.Sprintf("{\"code\":%d,\"message\":\"\",\"data\":{}}", err.Code))
 		}
 	}
-	global.Log.Info("err_response", err)
+	global.Log.Error("err_response", err)
 	_, _ = (*c).Write(encrypt(result, []byte(key)))
 }
 
