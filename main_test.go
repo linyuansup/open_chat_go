@@ -46,7 +46,8 @@ func TestRunner(t *testing.T) {
 		!t.Run("TestOrganAvatar", TestOrganAvatar) ||
 		!t.Run("TestOrganSetAvatar", TestOrganSetAvatar) ||
 		!t.Run("TestUserSetName", TestUserSetName) ||
-		!t.Run("TestOrganExit", TestOrganExit) {
+		!t.Run("TestOrganExit", TestOrganExit) ||
+		!t.Run("TestGroupRequest", TestGroupRequest) {
 		t.Fatal()
 	}
 }

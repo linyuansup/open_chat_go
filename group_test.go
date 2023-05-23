@@ -3,6 +3,7 @@ package main
 import (
 	"opChat/api"
 	"opChat/request"
+	"opChat/response"
 	"testing"
 )
 
@@ -86,5 +87,12 @@ func TestGroupRemoveAdmin(t *testing.T) {
 	})
 	if e == nil {
 		t.Fatal("重复取消管理员成功")
+	}
+}
+
+func TestGroupRequest(t *testing.T) {
+	_, e := api.Group.Request(userID, &response.Request{})
+	if e != nil {
+		t.Fatal("获取请求失败：" + e.Error())
 	}
 }

@@ -264,3 +264,60 @@ func (g *group) RemoveAdmin(uid int, request *request.GroupRemoveAdmin) (*respon
 		Data:    &response.GroupRemoveAdmin{},
 	}, nil
 }
+
+func (g *group) Request(uid int, request *response.Request) (*response.Response[response.GroupRequest], *errcode.Error) {
+	tx := global.Database.Begin()
+	var memberList []entity.Member
+	var groupList []entity.Group
+	err := tx.Where(&entity.Group{Creator: uint(uid)}, "Creator").Find(&groupList).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	err = tx.Where(&entity.Member{User: uid, Admin: true}, "user", "admin").Find(&memberList).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	var result []response.Request
+	for _, v := range memberList {
+		var m []entity.Member
+		err = tx.Where(&entity.Member{Grant: false, Group: v.Group}, "grant", "group").Find(&m).Error
+		if err != nil {
+			tx.Rollback()
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		for _, v2 := range m {
+			result = append(result, response.Request{
+				ID:      v2.User,
+				GroupID: v2.Group,
+			})
+		}
+	}
+	for _, v := range groupList {
+		var m []entity.Member
+		tx.Where(&entity.Member{Grant: false, Group: int(v.ID)}, "grant", "group").Find(&m)
+		if err != nil {
+			tx.Rollback()
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		for _, v2 := range m {
+			result = append(result, response.Request{
+				ID:      v2.User,
+				GroupID: v2.Group,
+			})
+		}
+	}
+	err = tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.CommitError.WithDetail(err.Error())
+	}
+	return &response.Response[response.GroupRequest]{
+		Code:    200,
+		Message: "获取申请列表成功",
+		Data: &response.GroupRequest{
+			Request: result,
+		},
+	}, nil
+}
