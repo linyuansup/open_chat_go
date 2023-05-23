@@ -19,6 +19,7 @@ func main() {
 
 	http.Register("/organ/join", true, api.Organ.Join)
 	http.Register("/organ/avatar", true, api.Organ.Avatar)
+	http.Register("/organ/setAvatar", true, api.Organ.SetAvatar)
 
 	e := global.StartServe()
 	if e != nil {
