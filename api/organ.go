@@ -252,3 +252,50 @@ func (o *organ) SetAvatar(uid int, request *request.OrganSetAvatarRequest, ctx c
 		},
 	}, nil
 }
+
+func (o *organ) Name(uid int, request *request.OrganNameRequest, ctx context.Context) (*response.Response[response.OrganNameResponse], *errcode.Error) {
+	tx := global.Database.Begin()
+	var (
+		name string
+		err  error
+	)
+	if request.ID >= 600000000 {
+		group := entity.Group{
+			ID: uint(request.ID),
+		}
+		err = tx.First(&group).Error
+		if err != nil {
+			tx.Rollback()
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, errcode.NoGroupFound
+			}
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		name = group.Name
+	} else {
+		user := entity.User{
+			ID: uint(request.ID),
+		}
+		err = tx.First(&user).Error
+		if err != nil {
+			tx.Rollback()
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, errcode.NoUserRequestFound
+			}
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		name = user.Username
+	}
+	err = tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.CommitError.WithDetail(err.Error())
+	}
+	return &response.Response[response.OrganNameResponse]{
+		Code:    200,
+		Message: "获取成功",
+		Data: &response.OrganNameResponse{
+			Name: name,
+		},
+	}, nil
+}

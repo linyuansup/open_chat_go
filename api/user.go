@@ -26,6 +26,7 @@ func (u *user) Create(uid int, request *request.UserCreateRequest, ctx context.C
 	}
 	targetUser := &entity.User{
 		ID:             uint(atomic.AddInt32(&global.NowUserID, 1)),
+		Username:       "新用户",
 		PhoneNumber:    request.PhoneNumber,
 		Password:       request.Password,
 		DeviceID:       request.DeviceID,

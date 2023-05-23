@@ -67,3 +67,24 @@ func TestOrganSetAvatar(t *testing.T) {
 		t.Fatal("设置头像失败：" + e.Error())
 	}
 }
+
+func TestOrganName(t *testing.T) {
+	res, e := api.Organ.Name(userID, &request.OrganNameRequest{
+		ID: userID,
+	}, context.Background())
+	if e != nil {
+		t.Fatal("获取用户名失败：" + e.Error())
+	}
+	if res.Data.Name != "新用户" {
+		t.Fatal("用户名错误：" + res.Data.Name)
+	}
+	res, e = api.Organ.Name(userID, &request.OrganNameRequest{
+		ID: groupID,
+	}, context.Background())
+	if e != nil {
+		t.Fatal("获取用户名失败：" + e.Error())
+	}
+	if res.Data.Name != "测试群组" {
+		t.Fatal("用户名错误：" + res.Data.Name)
+	}
+}

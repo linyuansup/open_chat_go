@@ -13,3 +13,7 @@ type OrganSetAvatarRequest struct {
 	File string `json:"file" validate:"required"`
 	Ex   string `json:"ex" validate:"required"`
 }
+
+type OrganNameRequest struct {
+	ID int `json:"id" validate:"len=9"`
+}
