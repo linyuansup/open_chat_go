@@ -110,13 +110,13 @@ func (g *group) Agree(uid int, request *request.GroupAgree) (*response.Response[
 		if err != nil {
 			tx.Rollback()
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, errcode.UserNotInGroup
+				return nil, errcode.NoRequest
 			}
 			return nil, errcode.FindDataError.WithDetail(err.Error())
 		}
 		if !member.Admin {
 			tx.Rollback()
-			return nil, errcode.NoChangePermission
+			return nil, errcode.UserIsNotAdmin
 		}
 	}
 	member := entity.Member{
@@ -344,13 +344,13 @@ func (g *group) Disagree(uid int, request *request.GroupDisagree) (*response.Res
 		if err != nil {
 			tx.Rollback()
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, errcode.UserNotInGroup
+				return nil, errcode.NoRequest
 			}
 			return nil, errcode.FindDataError.WithDetail(err.Error())
 		}
 		if !member.Admin {
 			tx.Rollback()
-			return nil, errcode.NoChangePermission
+			return nil, errcode.UserIsNotAdmin
 		}
 	}
 	member := entity.Member{
