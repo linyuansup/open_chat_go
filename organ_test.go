@@ -35,18 +35,35 @@ func TestOrganJoin(t *testing.T) {
 }
 
 func TestOrganAvatar(t *testing.T) {
-	res, e := api.Organ.Avatar(userID, &request.OrganAvatarRequest{
+	_, e := api.Organ.Avatar(userID, &request.OrganAvatarRequest{
 		ID: userID,
 	}, context.Background())
 	if e != nil {
 		t.Fatal("获取头像失败：" + e.Error())
 	}
-	t.Log(res.Data.File)
-	res, e = api.Organ.Avatar(userID, &request.OrganAvatarRequest{
+	_, e = api.Organ.Avatar(userID, &request.OrganAvatarRequest{
 		ID: groupID,
 	}, context.Background())
 	if e != nil {
 		t.Fatal("获取头像失败：" + e.Error())
 	}
-	t.Log(res.Data.File)
+}
+
+func TestOrganSetAvatar(t *testing.T) {
+	_, e := api.Organ.SetAvatar(userID, &request.OrganSetAvatarRequest{
+		ID: userID,
+		File: avatarBase,
+		Ex: "png",
+	}, context.Background())
+	if e != nil {
+		t.Fatal("设置头像失败：" + e.Error())
+	}
+	_, e = api.Organ.SetAvatar(userID, &request.OrganSetAvatarRequest{
+		ID: groupID,
+		File: avatarBase,
+		Ex: "png",
+	}, context.Background())
+	if e != nil {
+		t.Fatal("设置头像失败：" + e.Error())
+	}
 }

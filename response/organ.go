@@ -7,4 +7,6 @@ type OrganAvatarResponse struct {
 	Ex   string `json:"ex"`
 }
 
-type OrganSetAvatarResponse struct{}
+type OrganSetAvatarResponse struct {
+	Name string `json:"name"`
+}

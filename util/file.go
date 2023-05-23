@@ -2,14 +2,14 @@ package util
 
 import (
 	"crypto/md5"
-	"encoding/hex"
+	"fmt"
 	"opChat/errcode"
 	"opChat/global"
 	"os"
 )
 
 func SaveFile(data []byte, ex string, mode string) (string, *errcode.Error) {
-	fileName := hex.EncodeToString(md5.New().Sum(data))
+	fileName := fmt.Sprintf("%x", md5.Sum([]byte(data)))
 	f, e := os.Create("." + global.FilePath + "/" + mode + "/" + fileName + "." + ex)
 	if e != nil {
 		return "", errcode.WriteDataError.WithDetail(e.Error())
