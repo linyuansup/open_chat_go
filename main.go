@@ -32,6 +32,8 @@ func main() {
 	http.Register("/friend/request", true, api.Friend.Request)
 
 	http.Register("/msg/send", true, api.Message.Send)
+	http.Register("/msg/up", true, api.Message.Up)
+	http.Register("/msg/down", true, api.Message.Down)
 
 	e := global.StartServe()
 	if e != nil {

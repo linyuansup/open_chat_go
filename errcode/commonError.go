@@ -20,4 +20,6 @@ var (
 	UserIsNotAdmin          = NewError(20000018, "用户不是管理员", 400)
 	UserNotFriend           = NewError(20000019, "用户不是好友", 400)
 	UserIsFriend            = NewError(20000020, "用户是好友", 400)
+	NoMessageFound          = NewError(20000021, "找不到消息", 400)
+	MessageNotBelongGroup   = NewError(20000022, "消息不属于组织", 400)
 )
