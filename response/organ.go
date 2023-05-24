@@ -1,6 +1,6 @@
 package response
 
-type OrganJoinResponse struct{}
+type OrganJoin struct{}
 
 type OrganAvatar struct {
 	File string `json:"file"`
@@ -16,4 +16,8 @@ type OrganName struct {
 }
 
 type OrganExit struct {
+}
+
+type OrganList struct {
+	ID []int `json:"id"`
 }

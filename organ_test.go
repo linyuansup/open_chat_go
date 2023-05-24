@@ -108,3 +108,10 @@ func TestOrganExit(t *testing.T) {
 		t.Fatal("退出组织失败：" + e.Error())
 	}
 }
+
+func TestOrganList(t *testing.T) {
+	_, e := api.Organ.List(userID, &request.OrganList{})
+	if e != nil {
+		t.Fatal("获取好友列表失败：" + e.Error())
+	}
+}
