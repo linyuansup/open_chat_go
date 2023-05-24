@@ -16,7 +16,7 @@ type organ struct{}
 
 var Organ organ
 
-func (o *organ) Join(uid int, request *request.OrganJoin) (*response.Response[response.OrganJoinResponse], *errcode.Error) {
+func (o *organ) Join(uid int, request *request.OrganJoin) (*response.Response[response.OrganJoin], *errcode.Error) {
 	tx := global.Database.Begin()
 	var err error
 	if request.ID >= 600000000 {
@@ -103,10 +103,10 @@ func (o *organ) Join(uid int, request *request.OrganJoin) (*response.Response[re
 		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
-	return &response.Response[response.OrganJoinResponse]{
+	return &response.Response[response.OrganJoin]{
 		Code:    200,
 		Message: "申请成功",
-		Data:    &response.OrganJoinResponse{},
+		Data:    &response.OrganJoin{},
 	}, nil
 }
 
@@ -390,5 +390,50 @@ func (o *organ) Exit(uid int, request *request.OrganExit) (*response.Response[re
 		Code:    200,
 		Message: "退出成功",
 		Data:    &response.OrganExit{},
+	}, nil
+}
+
+func (o *organ) List(uid int, request *request.OrganList) (*response.Response[response.OrganList], *errcode.Error) {
+	tx := global.Database.Begin()
+	var (
+		result []int
+		friend []entity.Friend
+		group  []entity.Group
+		member []entity.Member
+	)
+	err := tx.Where("(friends.from = ? OR friends.to = ?) AND friends.grant = true", uid, uid).Find(&friend).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	err = tx.Where(&entity.Group{Creator: uint(uid)}, "creator").Find(&group).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	err = tx.Where(&entity.Member{User: uid, Grant: true}, "user", "grant").Find(&member).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	for _, v := range friend {
+		if v.From != uid {
+			result = append(result, v.From)
+		} else {
+			result = append(result, v.To)
+		}
+	}
+	for _, v := range group {
+		result = append(result, int(v.ID))
+	}
+	for _, v := range member {
+		result = append(result, v.Group)
+	}
+	return &response.Response[response.OrganList]{
+		Code:    200,
+		Message: "获取成功",
+		Data: &response.OrganList{
+			ID: result,
+		},
 	}, nil
 }

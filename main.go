@@ -25,13 +25,16 @@ func main() {
 	http.Register("/organ/avatar", true, api.Organ.Avatar)
 	http.Register("/organ/setAvatar", true, api.Organ.SetAvatar)
 	http.Register("/organ/name", true, api.Organ.Name)
-	http.Register("/organ/exut", true, api.Organ.Exit)
+	http.Register("/organ/exit", true, api.Organ.Exit)
+	http.Register("/organ/list", true, api.Organ.List)
 
 	http.Register("/friend/agree", true, api.Friend.Agree)
 	http.Register("/friend/disagree", true, api.Friend.Disgree)
 	http.Register("/friend/request", true, api.Friend.Request)
 
 	http.Register("/msg/send", true, api.Message.Send)
+	http.Register("/msg/up", true, api.Message.Up)
+	http.Register("/msg/down", true, api.Message.Down)
 
 	e := global.StartServe()
 	if e != nil {

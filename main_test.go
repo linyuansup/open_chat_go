@@ -55,7 +55,10 @@ func TestRunner(t *testing.T) {
 		!t.Run("TestFriendAgree", TestFriendAgree) ||
 		!t.Run("TestFriendDisgree", TestFriendDisgree) ||
 		!t.Run("TestFriendRequest", TestFriendRequest) ||
-		!t.Run("TestMessageSend", TestMessageSend) {
+		!t.Run("TestMessageSend", TestMessageSend) ||
+		!t.Run("TestMessageUp", TestMessageUp) ||
+		!t.Run("TestMessageDown", TestMessageDown) ||
+		!t.Run("TestOrganList", TestOrganList) {
 		t.Fatal()
 	}
 }

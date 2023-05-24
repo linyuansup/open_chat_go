@@ -21,3 +21,6 @@ type OrganName struct {
 type OrganExit struct {
 	ID int `json:"id" validate:"len=9"`
 }
+
+type OrganList struct {
+}
