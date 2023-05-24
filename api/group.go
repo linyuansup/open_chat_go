@@ -438,3 +438,62 @@ func (g *group) SetName(uid int, request *request.GroupSetName) (*response.Respo
 		Data:    &response.GroupSetName{},
 	}, nil
 }
+
+func (g *group) Member(uid int, request *request.GroupMember) (*response.Response[response.GroupMember], *errcode.Error) {
+	tx := global.Database.Begin()
+	group := entity.Group{
+		ID: uint(request.ID),
+	}
+	err := tx.First(&group).Error
+	if err != nil {
+		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errcode.NoGroupFound
+		}
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	var member []entity.Member
+	err = tx.Where(&entity.Member{Group: request.ID}).Find(&member).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	var aList, mList []int
+	for _, v := range member {
+		if v.Admin {
+			aList = append(aList, v.User)
+		} else {
+			mList = append(mList, v.User)
+		}
+	}
+	in := false
+	if group.Creator != uint(uid) {
+		for _, v := range aList {
+			if v == uid {
+				in = true
+				break
+			}
+		}
+		if !in {
+			for _, v := range mList {
+				if v == uid {
+					in = true
+					break
+				}
+			}
+		}
+	}
+	if !in {
+		tx.Rollback()
+		return nil, errcode.UserNotInGroup
+	}
+	return &response.Response[response.GroupMember]{
+		Code:    200,
+		Message: "获取成功",
+		Data: &response.GroupMember{
+			Owner:  int(group.Creator),
+			Admin:  aList,
+			Member: mList,
+		},
+	}, nil
+}

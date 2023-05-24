@@ -34,3 +34,7 @@ type GroupSetName struct {
 	ID   int    `json:"id" validate:"len=9"`
 	Name string `json:"name" validate:"required"`
 }
+
+type GroupMember struct {
+	ID int `json:"id" validate:"len=9"`
+}
