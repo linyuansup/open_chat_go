@@ -28,27 +28,15 @@ func (f *friend) Agree(uid int, request *request.FriendAgree) (*response.Respons
 		return nil, errcode.FindDataError.WithDetail(err.Error())
 	}
 	friend := entity.Friend{
-		From: uid,
-		To:   request.ID,
+		From: request.ID,
+		To:   uid,
 	}
 	err = tx.First(&friend).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		friend = entity.Friend{
-			From: request.ID,
-			To:   uid,
-		}
-		err = tx.First(&friend).Error
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			tx.Rollback()
-			return nil, errcode.NoRequest
-		}
-		if err != nil {
-			tx.Rollback()
-			return nil, errcode.FindDataError.WithDetail(err.Error())
-		}
-	}
 	if err != nil {
 		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errcode.NoRequest
+		}
 		return nil, errcode.FindDataError.WithDetail(err.Error())
 	}
 	if friend.Grant {
@@ -86,27 +74,15 @@ func (f *friend) Disgree(uid int, request *request.FriendDisgree) (*response.Res
 		return nil, errcode.FindDataError.WithDetail(err.Error())
 	}
 	friend := entity.Friend{
-		From: uid,
-		To:   request.ID,
+		From: request.ID,
+		To:   uid,
 	}
 	err = tx.First(&friend).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		friend = entity.Friend{
-			From: request.ID,
-			To:   uid,
-		}
-		err = tx.First(&friend).Error
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			tx.Rollback()
-			return nil, errcode.NoRequest
-		}
-		if err != nil {
-			tx.Rollback()
-			return nil, errcode.FindDataError.WithDetail(err.Error())
-		}
-	}
 	if err != nil {
 		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errcode.NoRequest
+		}
 		return nil, errcode.FindDataError.WithDetail(err.Error())
 	}
 	if friend.Grant {
