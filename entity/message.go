@@ -8,7 +8,7 @@ import (
 
 type Message struct {
 	ID        uint `gorm:"primarykey"`
-	CreatedAt time.Time
+	CreatedAt time.Time `gorm:"primaryKey"`
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 	From      int

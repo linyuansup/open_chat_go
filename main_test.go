@@ -53,7 +53,8 @@ func TestRunner(t *testing.T) {
 		!t.Run("TestGroupDisgree", TestGroupDisgree) ||
 		!t.Run("TestGroupSetName", TestGroupSetName) ||
 		!t.Run("TestFriendAgree", TestFriendAgree) ||
-		!t.Run("TestFriendDisgree", TestFriendDisgree) {
+		!t.Run("TestFriendDisgree", TestFriendDisgree) ||
+		!t.Run("TestFriendRequest", TestFriendRequest) {
 		t.Fatal()
 	}
 }
