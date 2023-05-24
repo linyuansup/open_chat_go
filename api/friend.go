@@ -28,27 +28,15 @@ func (f *friend) Agree(uid int, request *request.FriendAgree) (*response.Respons
 		return nil, errcode.FindDataError.WithDetail(err.Error())
 	}
 	friend := entity.Friend{
-		From: uid,
-		To:   request.ID,
+		From: request.ID,
+		To:   uid,
 	}
 	err = tx.First(&friend).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		friend = entity.Friend{
-			From: request.ID,
-			To:   uid,
-		}
-		err = tx.First(&friend).Error
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			tx.Rollback()
-			return nil, errcode.NoRequest
-		}
-		if err != nil {
-			tx.Rollback()
-			return nil, errcode.FindDataError.WithDetail(err.Error())
-		}
-	}
 	if err != nil {
 		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errcode.NoRequest
+		}
 		return nil, errcode.FindDataError.WithDetail(err.Error())
 	}
 	if friend.Grant {
@@ -86,27 +74,15 @@ func (f *friend) Disgree(uid int, request *request.FriendDisgree) (*response.Res
 		return nil, errcode.FindDataError.WithDetail(err.Error())
 	}
 	friend := entity.Friend{
-		From: uid,
-		To:   request.ID,
+		From: request.ID,
+		To:   uid,
 	}
 	err = tx.First(&friend).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		friend = entity.Friend{
-			From: request.ID,
-			To:   uid,
-		}
-		err = tx.First(&friend).Error
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			tx.Rollback()
-			return nil, errcode.NoRequest
-		}
-		if err != nil {
-			tx.Rollback()
-			return nil, errcode.FindDataError.WithDetail(err.Error())
-		}
-	}
 	if err != nil {
 		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errcode.NoRequest
+		}
 		return nil, errcode.FindDataError.WithDetail(err.Error())
 	}
 	if friend.Grant {
@@ -127,5 +103,36 @@ func (f *friend) Disgree(uid int, request *request.FriendDisgree) (*response.Res
 		Code:    200,
 		Message: "操作成功",
 		Data:    &response.FriendDisgree{},
+	}, nil
+}
+
+func (f *friend) Request(uid int, request *request.FriendRequest) (*response.Response[response.FriendRequest], *errcode.Error) {
+	tx := global.Database.Begin()
+	var (
+		ids    []int
+		friend []entity.Friend
+	)
+	err := tx.Where(&entity.Friend{
+		To:    uid,
+		Grant: false,
+	}, "to", "grant").Find(&friend).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	for _, v := range friend {
+		ids = append(ids, v.From)
+	}
+	err = tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.CommitError.WithDetail(err.Error())
+	}
+	return &response.Response[response.FriendRequest]{
+		Code:    200,
+		Message: "获取成功",
+		Data: &response.FriendRequest{
+			ID: ids,
+		},
 	}, nil
 }

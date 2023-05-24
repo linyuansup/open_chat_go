@@ -7,3 +7,5 @@ type FriendAgree struct {
 type FriendDisgree struct {
 	ID int `json:"id"`
 }
+
+type FriendRequest struct{}

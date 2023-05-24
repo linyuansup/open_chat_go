@@ -62,32 +62,30 @@ func (o *organ) Join(uid int, request *request.OrganJoin) (*response.Response[re
 		}
 	} else {
 		friend := entity.Friend{
-			From: uid,
-			To:   request.ID,
+			From:  request.ID,
+			To:    uid,
+			Grant: true,
 		}
-		err = tx.First(&friend).Error
+		err = tx.Where(&friend, "grant").First(&friend).Error
 		if err == nil {
 			tx.Rollback()
-			if !friend.Grant {
-				return nil, errcode.AlreadyRequest
-			}
-			return nil, errcode.UserIsMember
+			return nil, errcode.UserIsFriend
 		}
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			tx.Rollback()
 			return nil, errcode.FindDataError.WithDetail(err.Error())
 		}
 		friend = entity.Friend{
-			From: request.ID,
-			To:   uid,
+			From: uid,
+			To:   request.ID,
 		}
 		err = tx.First(&friend).Error
 		if err == nil {
 			tx.Rollback()
-			if !friend.Grant {
-				return nil, errcode.AlreadyRequest
+			if friend.Grant {
+				return nil, errcode.UserIsFriend
 			}
-			return nil, errcode.UserIsMember
+			return nil, errcode.AlreadyRequest
 		}
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			tx.Rollback()
@@ -96,6 +94,7 @@ func (o *organ) Join(uid int, request *request.OrganJoin) (*response.Response[re
 		friend.Grant = false
 		err = tx.Create(&friend).Error
 		if err != nil {
+			tx.Rollback()
 			return nil, errcode.InsertDataError.WithDetail(err.Error())
 		}
 	}
@@ -304,7 +303,7 @@ func (o *organ) Exit(uid int, request *request.OrganExit) (*response.Response[re
 	var err error
 	if request.ID >= 600000000 {
 		group := entity.Group{
-			ID:      uint(request.ID),
+			ID: uint(request.ID),
 		}
 		err := tx.First(&group).Error
 		if err != nil {
@@ -337,7 +336,7 @@ func (o *organ) Exit(uid int, request *request.OrganExit) (*response.Response[re
 			return nil, errcode.DeleteDataError.WithDetail(err.Error())
 		}
 	} else {
-		user := entity.User {
+		user := entity.User{
 			ID: uint(request.ID),
 		}
 		err = tx.First(&user).Error

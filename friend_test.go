@@ -23,3 +23,17 @@ func TestFriendDisgree(t *testing.T) {
 		t.Fatal("不同意失败：" + e.Error())
 	}
 }
+
+func TestFriendRequest(t *testing.T) {
+	_, e := api.Organ.Join(userID3, &request.OrganJoin{
+		ID: userID,
+	})
+	if e != nil {
+		t.Fatal("申请失败：" + e.Error())
+	}
+	res, e := api.Friend.Request(userID, &request.FriendRequest{})
+	if e != nil {
+		t.Fatal("获取失败：" + e.Error())
+	}
+	t.Logf("%+v", res.Data.ID)
+}

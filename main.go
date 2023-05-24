@@ -29,6 +29,9 @@ func main() {
 
 	http.Register("/friend/agree", true, api.Friend.Agree)
 	http.Register("/friend/disagree", true, api.Friend.Disgree)
+	http.Register("/friend/request", true, api.Friend.Request)
+
+	http.Register("/msg/send", true, api.Message.Send)
 
 	e := global.StartServe()
 	if e != nil {
