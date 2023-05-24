@@ -19,3 +19,9 @@ type GroupRequest struct {
 }
 
 type GroupSetName struct{}
+
+type GroupMember struct {
+	Owner  int   `json:"owner"`
+	Admin  []int `json:"admin"`
+	Member []int `json:"member"`
+}
