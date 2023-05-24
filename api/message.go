@@ -220,12 +220,6 @@ func (m *message) Up(uid int, request *request.MessageUp) (*response.Response[re
 			}
 		}
 	}
-	sort.SliceStable(msg, func(i, j int) bool {
-		return msg[i].CreatedAt.Nanosecond() > msg[j].CreatedAt.Nanosecond()
-	})
-	if len(msg) > request.Num {
-		msg = msg[:request.Num]
-	}
 	result := []response.Message{}
 	for _, v := range msg {
 		result = append(result, response.Message{
@@ -365,12 +359,6 @@ func (m *message) Down(uid int, request *request.MessageDown) (*response.Respons
 				return nil, errcode.FindDataError.WithDetail(err.Error())
 			}
 		}
-	}
-	sort.SliceStable(msg, func(i, j int) bool {
-		return msg[i].CreatedAt.Nanosecond() < msg[j].CreatedAt.Nanosecond()
-	})
-	if len(msg) > request.Num {
-		msg = msg[:request.Num]
 	}
 	result := []response.Message{}
 	for _, v := range msg {
