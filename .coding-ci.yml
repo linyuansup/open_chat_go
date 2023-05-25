@@ -23,4 +23,4 @@ main:
               - docker stop opChat
               - docker rm opChat
               - docker image prune -a -f
-              - docker run -d -p 80:80 --name="opChat" linyuansup/opchat:$CODING_BRANCH_SHA
+              - docker run -d -p 80:80 -v /storage:/storage --name="opChat" linyuansup/opchat:$CODING_BRANCH_SHA
