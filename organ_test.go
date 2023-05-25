@@ -115,3 +115,12 @@ func TestOrganList(t *testing.T) {
 		t.Fatal("获取好友列表失败：" + e.Error())
 	}
 }
+
+func TestOrganAvatarName(t *testing.T) {
+	_, e := api.Organ.AvatarName(userID, &request.OrganAvatarName{
+		ID: userID,
+	})
+	if e != nil {
+		t.Fatal("获取组织头像名失败：" + e.Error())
+	}
+}

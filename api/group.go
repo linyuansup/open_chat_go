@@ -482,6 +482,8 @@ func (g *group) Member(uid int, request *request.GroupMember) (*response.Respons
 				}
 			}
 		}
+	} else {
+		in = true
 	}
 	if !in {
 		tx.Rollback()

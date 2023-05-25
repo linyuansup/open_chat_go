@@ -122,8 +122,9 @@ func successResponse(c *iris.Context, response any, key string) {
 		return
 	}
 	(*c).StatusCode(200)
+	marshal = encrypt(marshal, []byte(key))
 	global.Log.Info("success_response", marshal)
-	_, _ = (*c).Write(encrypt(marshal, []byte(key)))
+	_, _ = (*c).Write(marshal)
 }
 
 func compare(a []byte, b [16]byte) bool {

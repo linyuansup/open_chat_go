@@ -28,6 +28,7 @@ func main() {
 	http.Register("/organ/name", true, api.Organ.Name)
 	http.Register("/organ/exit", true, api.Organ.Exit)
 	http.Register("/organ/list", true, api.Organ.List)
+	http.Register("/organ/avatarName", true, api.Organ.AvatarName)
 
 	http.Register("/friend/agree", true, api.Friend.Agree)
 	http.Register("/friend/disagree", true, api.Friend.Disgree)

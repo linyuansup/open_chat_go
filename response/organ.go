@@ -21,3 +21,7 @@ type OrganExit struct {
 type OrganList struct {
 	ID []int `json:"id"`
 }
+
+type OrganAvatarName struct {
+	Name string `json:"name"`
+}
