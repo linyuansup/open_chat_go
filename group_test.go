@@ -123,3 +123,12 @@ func TestGroupSetName(t *testing.T) {
 		t.Fatal("设置名称失败：" + e.Error())
 	}
 }
+
+func TestGroupMember(t *testing.T) {
+	_, e := api.Group.Member(userID, &request.GroupMember{
+		ID: groupID,
+	})
+	if e != nil {
+		t.Fatal("获取群组成员失败：" + e.Error())
+	}
+}

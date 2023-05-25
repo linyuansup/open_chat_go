@@ -437,3 +437,50 @@ func (o *organ) List(uid int, request *request.OrganList) (*response.Response[re
 		},
 	}, nil
 }
+
+func (o *organ) AvatarName(uid int, request *request.OrganAvatarName) (*response.Response[response.OrganAvatarName], *errcode.Error) {
+	tx := global.Database.Begin()
+	var (
+		name string
+		err  error
+	)
+	if request.ID >= 600000000 {
+		group := entity.Group{
+			ID: uint(request.ID),
+		}
+		err = tx.First(&group).Error
+		if err != nil {
+			tx.Rollback()
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, errcode.NoGroupFound
+			}
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		name = group.AvatarFileName
+	} else {
+		user := entity.User{
+			ID: uint(request.ID),
+		}
+		err = tx.First(&user).Error
+		if err != nil {
+			tx.Rollback()
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, errcode.NoUserFound
+			}
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		name = user.AvatarFileName
+	}
+	err = tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.CommitError.WithDetail(err.Error())
+	}
+	return &response.Response[response.OrganAvatarName]{
+		Code:    200,
+		Message: "获取成功",
+		Data: &response.OrganAvatarName{
+			Name: name,
+		},
+	}, nil
+}

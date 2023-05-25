@@ -58,7 +58,9 @@ func TestRunner(t *testing.T) {
 		!t.Run("TestMessageSend", TestMessageSend) ||
 		!t.Run("TestMessageUp", TestMessageUp) ||
 		!t.Run("TestMessageDown", TestMessageDown) ||
-		!t.Run("TestOrganList", TestOrganList) {
+		!t.Run("TestOrganList", TestOrganList) ||
+		!t.Run("TestGroupMember", TestGroupMember) ||
+		!t.Run("TestOrganAvatarName", TestOrganAvatarName) {
 		t.Fatal()
 	}
 }
