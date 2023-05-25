@@ -16,7 +16,9 @@ func main() {
 
 	http.Register("/group/create", true, api.Group.Create)
 	http.Register("/group/agree", true, api.Group.Agree)
+	http.Register("/group/delete", true, api.Group.Delete)
 	http.Register("/group/setAdmin", true, api.Group.SetAdmin)
+	http.Register("/group/removeAdmin", true, api.Group.RemoveAdmin)
 	http.Register("/group/request", true, api.Group.Request)
 	http.Register("/group/disagree", true, api.Group.Disagree)
 	http.Register("/group/setName", true, api.Group.SetName)
