@@ -465,7 +465,7 @@ func (o *organ) AvatarName(uid int, request *request.OrganAvatarName) (*response
 		if err != nil {
 			tx.Rollback()
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, errcode.NoUserFound
+				return nil, errcode.NoUserRequestFound
 			}
 			return nil, errcode.FindDataError.WithDetail(err.Error())
 		}
