@@ -26,5 +26,5 @@ type OrganList struct {
 }
 
 type OrganAvatarName struct {
-	ID int `json:"id" validate:"len=9"`
+	ID int `json:"id" validate:"gte=100000000,lte=999999999"`
 }
