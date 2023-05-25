@@ -19,7 +19,7 @@ type OrganExit struct {
 }
 
 type OrganList struct {
-	ID []int `json:"id"`
+	Result []Refresh `json:"result"`
 }
 
 type OrganAvatarName struct {

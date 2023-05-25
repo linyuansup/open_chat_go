@@ -396,7 +396,7 @@ func (o *organ) Exit(uid int, request *request.OrganExit) (*response.Response[re
 func (o *organ) List(uid int, request *request.OrganList) (*response.Response[response.OrganList], *errcode.Error) {
 	tx := global.Database.Begin()
 	var (
-		result []int
+		result []response.Refresh
 		friend []entity.Friend
 		group  []entity.Group
 		member []entity.Member
@@ -418,22 +418,70 @@ func (o *organ) List(uid int, request *request.OrganList) (*response.Response[re
 	}
 	for _, v := range friend {
 		if v.From != uid {
-			result = append(result, v.From)
+			user := entity.User{
+				ID: uint(v.From),
+			}
+			err = tx.First(&user).Error
+			if err != nil {
+				tx.Rollback()
+				return nil, errcode.FindDataError.WithDetail(err.Error())
+			}
+			result = append(result, response.Refresh{
+				ID: v.From,
+				Name: user.Username,
+				Avatar: user.AvatarFileName,
+			})
 		} else {
-			result = append(result, v.To)
+			user := entity.User{
+				ID: uint(v.To),
+			}
+			err = tx.First(&user).Error
+			if err != nil {
+				tx.Rollback()
+				return nil, errcode.FindDataError.WithDetail(err.Error())
+			}
+			result = append(result, response.Refresh{
+				ID: v.To,
+				Name: user.Username,
+				Avatar: user.AvatarFileName,
+			})
 		}
 	}
 	for _, v := range group {
-		result = append(result, int(v.ID))
+		user := entity.Group{
+			ID: uint(v.ID),
+		}
+		err = tx.First(&user).Error
+		if err != nil {
+			tx.Rollback()
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		result = append(result, response.Refresh{
+			ID: int(v.ID),
+			Name: user.Name,
+			Avatar: user.AvatarFileName,
+		})
 	}
 	for _, v := range member {
-		result = append(result, v.Group)
+		user := entity.Group{
+			ID: uint(v.User),
+		}
+		err = tx.First(&user).Error
+		if err != nil {
+			tx.Rollback()
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		result = append(result, response.Refresh{
+			ID: int(v.Group),
+			Name: user.Name,
+			Avatar: user.AvatarFileName,
+		})
 	}
 	return &response.Response[response.OrganList]{
 		Code:    200,
 		Message: "获取成功",
 		Data: &response.OrganList{
-			ID: result,
+			Result: result,
 		},
 	}, nil
 }
