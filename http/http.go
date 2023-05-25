@@ -68,7 +68,7 @@ func Register[req any, res any](path string, userCheck bool, action func(uid int
 			errorResponse(&c, errcode.JsonFormatError.WithDetail(err.Error()), key)
 			return
 		}
-		global.Log.Info("request", "id = "+fmt.Sprint(intID) +", data = ", fmt.Sprintf("%+v", unm))
+		global.Log.Info("request", "id = "+fmt.Sprint(intID)+", data = ", fmt.Sprintf("%+v", unm))
 		err = global.Validator.Struct(&unm)
 		if err != nil {
 			errorResponse(&c, errcode.ValidatorError.WithDetail(err.Error()), key)
