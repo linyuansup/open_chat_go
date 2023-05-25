@@ -58,22 +58,22 @@ func Register[req any, res any](path string, userCheck bool, action func(uid int
 		}
 		body, err := c.GetBody()
 		if err != nil {
-			errorResponse(&c, errcode.GetBodyError, key)
+			errorResponse(&c, errcode.GetBodyError.WithDetail(err.Error()), key)
 			return
 		}
 		result := encrypt(body, []byte(key))
 		var unm req
 		err = json.Unmarshal(result, &unm)
 		if err != nil {
-			errorResponse(&c, errcode.JsonFormatError, key)
-			return
-		}
-		err = global.Validator.Struct(&unm)
-		if err != nil {
-			errorResponse(&c, errcode.ValidatorError, key)
+			errorResponse(&c, errcode.JsonFormatError.WithDetail(err.Error()), key)
 			return
 		}
 		global.Log.Info("request", "id = "+fmt.Sprint(intID) +", data = ", fmt.Sprintf("%+v", unm))
+		err = global.Validator.Struct(&unm)
+		if err != nil {
+			errorResponse(&c, errcode.ValidatorError.WithDetail(err.Error()), key)
+			return
+		}
 		res, e := action(intID, &unm)
 		if e != nil {
 			errorResponse(&c, e, key)
@@ -117,14 +117,13 @@ func errorResponse(c *iris.Context, err *errcode.Error, key string) {
 
 func successResponse(c *iris.Context, response any, key string) {
 	marshal, err := json.Marshal(response)
+	global.Log.Info("success_response", string(marshal))
 	if err != nil {
 		errorResponse(c, errcode.JsonFormatError.WithDetail(err.Error()), key)
 		return
 	}
 	(*c).StatusCode(200)
-	marshal = encrypt(marshal, []byte(key))
-	global.Log.Info("success_response", marshal)
-	_, _ = (*c).Write(marshal)
+	_, _ = (*c).Write(encrypt(marshal, []byte(key)))
 }
 
 func compare(a []byte, b [16]byte) bool {
