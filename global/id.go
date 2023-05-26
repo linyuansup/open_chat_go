@@ -29,7 +29,7 @@ func initID() {
 		}
 		NowGroupID = 600000000
 	} else {
-		NowGroupID = int32(u.ID)
+		NowGroupID = int32(g.ID)
 	}
 	Log.Info("startup", fmt.Sprintf("NowGroupID = %d", NowGroupID))
 
