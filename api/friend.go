@@ -93,10 +93,15 @@ func (f *friend) Disgree(uid int, request *request.FriendDisgree) (*response.Res
 		tx.Rollback()
 		return nil, errcode.UserIsFriend
 	}
+	err = tx.Where("messages.from = ? AND messages.to = ?", friend.From, friend.To).Or("messages.from = ? AND messages.to = ?", friend.To, friend.From).Delete(&entity.Message{}).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.DeleteDataError.WithDetail(err.Error())
+	}
 	err = tx.Delete(&friend).Error
 	if err != nil {
 		tx.Rollback()
-		return nil, errcode.UpdateDataError.WithDetail(err.Error())
+		return nil, errcode.DeleteDataError.WithDetail(err.Error())
 	}
 	err = tx.Commit().Error
 	if err != nil {
