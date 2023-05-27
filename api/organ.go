@@ -8,6 +8,7 @@ import (
 	"opChat/request"
 	"opChat/response"
 	"opChat/util"
+	"sync/atomic"
 
 	"gorm.io/gorm"
 )
@@ -21,7 +22,9 @@ func (o *organ) Join(uid int, request *request.OrganJoin) (*response.Response[re
 	var err error
 	if request.ID >= 600000000 {
 		targetGroup := entity.Group{
-			ID: uint(request.ID),
+			Model: gorm.Model{
+				ID: uint(request.ID),
+			},
 		}
 		err = tx.Find(&targetGroup).Error
 		if err != nil {
@@ -55,6 +58,7 @@ func (o *organ) Join(uid int, request *request.OrganJoin) (*response.Response[re
 			return nil, errcode.FindDataError.WithDetail(err.Error())
 		}
 		member.Grant = false
+		member.ID = uint(atomic.AddInt32(&global.NowMemberID, 1))
 		err = tx.Create(&member).Error
 		if err != nil {
 			tx.Rollback()
@@ -92,6 +96,7 @@ func (o *organ) Join(uid int, request *request.OrganJoin) (*response.Response[re
 			return nil, errcode.FindDataError.WithDetail(err.Error())
 		}
 		friend.Grant = false
+		friend.ID = uint(atomic.AddInt32(&global.NowFriendID, 1))
 		err = tx.Create(&friend).Error
 		if err != nil {
 			tx.Rollback()
@@ -119,7 +124,9 @@ func (o *organ) Avatar(uid int, request *request.OrganAvatar) (*response.Respons
 	)
 	if request.ID >= 600000000 {
 		group := entity.Group{
-			ID: uint(request.ID),
+			Model: gorm.Model{
+				ID: uint(request.ID),
+			},
 		}
 		err = tx.First(&group).Error
 		if err != nil {
@@ -133,7 +140,9 @@ func (o *organ) Avatar(uid int, request *request.OrganAvatar) (*response.Respons
 		avatarEx = group.AvatarExName
 	} else {
 		user := entity.User{
-			ID: uint(request.ID),
+			Model: gorm.Model{
+				ID: uint(request.ID),
+			},
 		}
 		err = tx.First(&user).Error
 		if err != nil {
@@ -181,7 +190,9 @@ func (o *organ) SetAvatar(uid int, request *request.OrganSetAvatar) (*response.R
 	}
 	if request.ID >= 600000000 {
 		group := entity.Group{
-			ID: uint(request.ID),
+			Model: gorm.Model{
+				ID: uint(request.ID),
+			},
 		}
 		err = tx.First(&group).Error
 		if err != nil {
@@ -222,7 +233,9 @@ func (o *organ) SetAvatar(uid int, request *request.OrganSetAvatar) (*response.R
 			return nil, errcode.NoChangePermission
 		}
 		user := entity.User{
-			ID: uint(uid),
+			Model: gorm.Model{
+				ID: uint(uid),
+			},
 		}
 		err := tx.First(&user).Error
 		if err != nil {
@@ -259,7 +272,9 @@ func (o *organ) Name(uid int, request *request.OrganName) (*response.Response[re
 	)
 	if request.ID >= 600000000 {
 		group := entity.Group{
-			ID: uint(request.ID),
+			Model: gorm.Model{
+				ID: uint(request.ID),
+			},
 		}
 		err = tx.First(&group).Error
 		if err != nil {
@@ -272,7 +287,9 @@ func (o *organ) Name(uid int, request *request.OrganName) (*response.Response[re
 		name = group.Name
 	} else {
 		user := entity.User{
-			ID: uint(request.ID),
+			Model: gorm.Model{
+				ID: uint(request.ID),
+			},
 		}
 		err = tx.First(&user).Error
 		if err != nil {
@@ -303,7 +320,9 @@ func (o *organ) Exit(uid int, request *request.OrganExit) (*response.Response[re
 	var err error
 	if request.ID >= 600000000 {
 		group := entity.Group{
-			ID: uint(request.ID),
+			Model: gorm.Model{
+				ID: uint(request.ID),
+			},
 		}
 		err := tx.First(&group).Error
 		if err != nil {
@@ -337,7 +356,9 @@ func (o *organ) Exit(uid int, request *request.OrganExit) (*response.Response[re
 		}
 	} else {
 		user := entity.User{
-			ID: uint(request.ID),
+			Model: gorm.Model{
+				ID: uint(request.ID),
+			},
 		}
 		err = tx.First(&user).Error
 		if err != nil {
@@ -419,7 +440,9 @@ func (o *organ) List(uid int, request *request.OrganList) (*response.Response[re
 	for _, v := range friend {
 		if v.From != uid {
 			user := entity.User{
-				ID: uint(v.From),
+				Model: gorm.Model{
+					ID: uint(v.From),
+				},
 			}
 			err = tx.First(&user).Error
 			if err != nil {
@@ -427,13 +450,15 @@ func (o *organ) List(uid int, request *request.OrganList) (*response.Response[re
 				return nil, errcode.FindDataError.WithDetail(err.Error())
 			}
 			result = append(result, response.Refresh{
-				ID: v.From,
-				Name: user.Username,
+				ID:     v.From,
+				Name:   user.Username,
 				Avatar: user.AvatarFileName,
 			})
 		} else {
 			user := entity.User{
-				ID: uint(v.To),
+				Model: gorm.Model{
+					ID: uint(v.To),
+				},
 			}
 			err = tx.First(&user).Error
 			if err != nil {
@@ -441,15 +466,17 @@ func (o *organ) List(uid int, request *request.OrganList) (*response.Response[re
 				return nil, errcode.FindDataError.WithDetail(err.Error())
 			}
 			result = append(result, response.Refresh{
-				ID: v.To,
-				Name: user.Username,
+				ID:     v.To,
+				Name:   user.Username,
 				Avatar: user.AvatarFileName,
 			})
 		}
 	}
 	for _, v := range group {
 		user := entity.Group{
-			ID: uint(v.ID),
+			Model: gorm.Model{
+				ID: uint(v.ID),
+			},
 		}
 		err = tx.First(&user).Error
 		if err != nil {
@@ -457,14 +484,16 @@ func (o *organ) List(uid int, request *request.OrganList) (*response.Response[re
 			return nil, errcode.FindDataError.WithDetail(err.Error())
 		}
 		result = append(result, response.Refresh{
-			ID: int(v.ID),
-			Name: user.Name,
+			ID:     int(v.ID),
+			Name:   user.Name,
 			Avatar: user.AvatarFileName,
 		})
 	}
 	for _, v := range member {
 		user := entity.Group{
-			ID: uint(v.User),
+			Model: gorm.Model{
+				ID: uint(v.User),
+			},
 		}
 		err = tx.First(&user).Error
 		if err != nil {
@@ -472,8 +501,8 @@ func (o *organ) List(uid int, request *request.OrganList) (*response.Response[re
 			return nil, errcode.FindDataError.WithDetail(err.Error())
 		}
 		result = append(result, response.Refresh{
-			ID: int(v.Group),
-			Name: user.Name,
+			ID:     int(v.Group),
+			Name:   user.Name,
 			Avatar: user.AvatarFileName,
 		})
 	}
@@ -494,7 +523,9 @@ func (o *organ) AvatarName(uid int, request *request.OrganAvatarName) (*response
 	)
 	if request.ID >= 600000000 {
 		group := entity.Group{
-			ID: uint(request.ID),
+			Model: gorm.Model{
+				ID: uint(request.ID),
+			},
 		}
 		err = tx.First(&group).Error
 		if err != nil {
@@ -507,7 +538,9 @@ func (o *organ) AvatarName(uid int, request *request.OrganAvatarName) (*response
 		name = group.AvatarFileName
 	} else {
 		user := entity.User{
-			ID: uint(request.ID),
+			Model: gorm.Model{
+				ID: uint(request.ID),
+			},
 		}
 		err = tx.First(&user).Error
 		if err != nil {

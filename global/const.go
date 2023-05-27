@@ -14,6 +14,8 @@ var (
 	NowUserID        int32
 	NowGroupID       int32
 	NowMessageID     int32
-	AvatarFileName = "e859977fae97b33c7e3e56d46098bd5d"
-	AvatarExName = "jpg"
+	NowMemberID      int32
+	NowFriendID      int32
+	AvatarFileName   = "e859977fae97b33c7e3e56d46098bd5d"
+	AvatarExName     = "jpg"
 )

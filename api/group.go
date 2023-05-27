@@ -20,7 +20,9 @@ func (g *group) Create(uid int, request *request.GroupCreate) (*response.Respons
 	tx := global.Database.Begin()
 	id := atomic.AddInt32(&global.NowGroupID, 1)
 	e := tx.Create(&entity.Group{
-		ID:             uint(id),
+		Model: gorm.Model{
+			ID: uint(id),
+		},
 		Creator:        uint(uid),
 		Name:           request.Name,
 		AvatarFileName: global.AvatarFileName,
@@ -47,7 +49,9 @@ func (g *group) Create(uid int, request *request.GroupCreate) (*response.Respons
 func (g *group) Delete(uid int, request *request.GroupDelete) (*response.Response[response.GroupDelete], *errcode.Error) {
 	tx := global.Database.Begin()
 	targetGroup := entity.Group{
-		ID: uint(request.ID),
+		Model: gorm.Model{
+			ID: uint(request.ID),
+		},
 	}
 	err := tx.Find(&targetGroup).Error
 	if err != nil {
@@ -91,7 +95,9 @@ func (g *group) Delete(uid int, request *request.GroupDelete) (*response.Respons
 func (g *group) Agree(uid int, request *request.GroupAgree) (*response.Response[response.GroupAgree], *errcode.Error) {
 	tx := global.Database.Begin()
 	targetGroup := entity.Group{
-		ID: uint(request.GroupID),
+		Model: gorm.Model{
+			ID: uint(request.GroupID),
+		},
 	}
 	err := tx.First(&targetGroup).Error
 	if err != nil {
@@ -156,7 +162,9 @@ func (g *group) Agree(uid int, request *request.GroupAgree) (*response.Response[
 func (g *group) SetAdmin(uid int, request *request.GroupSetAdmin) (*response.Response[response.GroupSetAdmin], *errcode.Error) {
 	tx := global.Database.Begin()
 	group := entity.Group{
-		ID: uint(request.GroupID),
+		Model: gorm.Model{
+			ID: uint(request.GroupID),
+		},
 	}
 	err := tx.First(&group).Error
 	if err != nil {
@@ -214,7 +222,9 @@ func (g *group) SetAdmin(uid int, request *request.GroupSetAdmin) (*response.Res
 func (g *group) RemoveAdmin(uid int, request *request.GroupRemoveAdmin) (*response.Response[response.GroupRemoveAdmin], *errcode.Error) {
 	tx := global.Database.Begin()
 	group := entity.Group{
-		ID: uint(request.GroupID),
+		Model: gorm.Model{
+			ID: uint(request.GroupID),
+		},
 	}
 	err := tx.First(&group).Error
 	if err != nil {
@@ -325,7 +335,9 @@ func (g *group) Request(uid int, request *response.Request) (*response.Response[
 func (g *group) Disagree(uid int, request *request.GroupDisagree) (*response.Response[response.GroupDisagree], *errcode.Error) {
 	tx := global.Database.Begin()
 	targetGroup := entity.Group{
-		ID: uint(request.GroupID),
+		Model: gorm.Model{
+			ID: uint(request.GroupID),
+		},
 	}
 	err := tx.First(&targetGroup).Error
 	if err != nil {
@@ -389,7 +401,9 @@ func (g *group) Disagree(uid int, request *request.GroupDisagree) (*response.Res
 func (g *group) SetName(uid int, request *request.GroupSetName) (*response.Response[response.GroupSetName], *errcode.Error) {
 	tx := global.Database.Begin()
 	group := entity.Group{
-		ID: uint(request.ID),
+		Model: gorm.Model{
+			ID: uint(request.ID),
+		},
 	}
 	err := tx.First(&group).Error
 	if err != nil {
@@ -442,7 +456,9 @@ func (g *group) SetName(uid int, request *request.GroupSetName) (*response.Respo
 func (g *group) Member(uid int, request *request.GroupMember) (*response.Response[response.GroupMember], *errcode.Error) {
 	tx := global.Database.Begin()
 	group := entity.Group{
-		ID: uint(request.ID),
+		Model: gorm.Model{
+			ID: uint(request.ID),
+		},
 	}
 	err := tx.First(&group).Error
 	if err != nil {

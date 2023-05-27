@@ -18,7 +18,9 @@ var Friend friend
 func (f *friend) Agree(uid int, request *request.FriendAgree) (*response.Response[response.FriendAgree], *errcode.Error) {
 	tx := global.Database.Begin()
 	err := tx.First(&entity.User{
-		ID: uint(request.ID),
+		Model: gorm.Model{
+			ID: uint(request.ID),
+		},
 	}).Error
 	if err != nil {
 		tx.Rollback()
@@ -64,7 +66,9 @@ func (f *friend) Agree(uid int, request *request.FriendAgree) (*response.Respons
 func (f *friend) Disgree(uid int, request *request.FriendDisgree) (*response.Response[response.FriendDisgree], *errcode.Error) {
 	tx := global.Database.Begin()
 	err := tx.First(&entity.User{
-		ID: uint(request.ID),
+		Model: gorm.Model{
+			ID: uint(request.ID),
+		},
 	}).Error
 	if err != nil {
 		tx.Rollback()
