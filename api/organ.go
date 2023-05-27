@@ -492,7 +492,7 @@ func (o *organ) List(uid int, request *request.OrganList) (*response.Response[re
 	for _, v := range member {
 		user := entity.Group{
 			Model: gorm.Model{
-				ID: uint(v.User),
+				ID: uint(v.Group),
 			},
 		}
 		err = tx.First(&user).Error

@@ -38,7 +38,7 @@ func (l *Logger) Error(v ...interface{}) {
 }
 
 func (l *Logger) log(level string, v ...interface{}) *errcode.Error {
-	_, f, line, _ := runtime.Caller(3)
+	_, f, line, _ := runtime.Caller(4)
 	var e *errcode.Error
 	if l.toFile {
 		e = l.fileLog.write(level, f+":"+fmt.Sprint(line), v)
