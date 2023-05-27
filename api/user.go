@@ -24,7 +24,9 @@ func (u *user) Create(uid int, request *request.UserCreate) (*response.Response[
 		return nil, errcode.PhoneNumberAlreadyExist
 	}
 	targetUser := &entity.User{
-		ID:             uint(atomic.AddInt32(&global.NowUserID, 1)),
+		Model: gorm.Model{
+			ID: uint(atomic.AddInt32(&global.NowUserID, 1)),
+		},
 		Username:       "新用户",
 		PhoneNumber:    request.PhoneNumber,
 		Password:       request.Password,
@@ -78,14 +80,13 @@ func (u *user) Login(uid int, request *request.UserLogin) (*response.Response[re
 func (u *user) SetPassword(uid int, request *request.UserSetPassword) (*response.Response[response.UserSetPassword], *errcode.Error) {
 	tx := global.Database.Begin()
 	targetUser := entity.User{
-		ID: uint(uid),
+		Model: gorm.Model{
+			ID: uint(uid),
+		},
 	}
 	err := tx.First(&targetUser).Error
 	if err != nil {
 		tx.Rollback()
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errcode.NoTargetFound
-		}
 		return nil, errcode.FindDataError.WithDetail(err.Error())
 	}
 	if request.OldPassword != targetUser.Password {
@@ -112,7 +113,9 @@ func (u *user) SetPassword(uid int, request *request.UserSetPassword) (*response
 func (u *user) SetName(uid int, request *request.UserSetName) (*response.Response[response.UserSetName], *errcode.Error) {
 	tx := global.Database.Begin()
 	user := entity.User{
-		ID: uint(uid),
+		Model: gorm.Model{
+			ID: uint(uid),
+		},
 	}
 	err := tx.First(&user).Error
 	if err != nil {

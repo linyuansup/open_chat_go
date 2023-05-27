@@ -7,11 +7,12 @@ import (
 )
 
 type Member struct {
-	User      int `gorm:"primarykey"`
-	Group     int `gorm:"primarykey"`
-	CreatedAt time.Time `gorm:"primaryKey"`
+	ID        uint
+	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
+	User      int            `gorm:"primarykey"`
+	Group     int            `gorm:"primarykey"`
 	Grant     bool
 	Admin     bool
 }

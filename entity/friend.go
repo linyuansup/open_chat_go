@@ -7,10 +7,11 @@ import (
 )
 
 type Friend struct {
-	From      int `gorm:"primarykey"`
-	To        int `gorm:"primaryKey"`
-	CreatedAt time.Time `gorm:"primaryKey"`
+	ID        uint
+	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Grant     bool
+	From  int `gorm:"primarykey"`
+	To    int `gorm:"primarykey"`
+	Grant bool
 }

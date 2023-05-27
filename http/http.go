@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/kataras/iris/v12"
+	"gorm.io/gorm"
 )
 
 func Register[req any, res any](path string, userCheck bool, action func(uid int, request *req) (*response.Response[res], *errcode.Error)) {
@@ -33,7 +34,9 @@ func Register[req any, res any](path string, userCheck bool, action func(uid int
 		}
 		if userCheck {
 			result := entity.User{
-				ID: uint(intID),
+				Model: gorm.Model{
+					ID: uint(intID),
+				},
 			}
 			e := global.Database.First(&result).Error
 			if e != nil {

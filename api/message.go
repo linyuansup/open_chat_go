@@ -24,7 +24,9 @@ func (m *message) Send(uid int, request *request.MessageSend) (*response.Respons
 	)
 	if request.ID >= 600000000 {
 		group := entity.Group{
-			ID: uint(request.ID),
+			Model: gorm.Model{
+				ID: uint(request.ID),
+			},
 		}
 		err = tx.First(&group).Error
 		if err != nil {
@@ -78,7 +80,9 @@ func (m *message) Send(uid int, request *request.MessageSend) (*response.Respons
 		}
 	}
 	message = entity.Message{
-		ID:   uint(atomic.AddInt32(&global.NowMessageID, 1)),
+		Model: gorm.Model{
+			ID: uint(atomic.AddInt32(&global.NowMessageID, 1)),
+		},
 		From: uid,
 		To:   request.ID,
 		Data: request.Data,
@@ -110,7 +114,9 @@ func (m *message) Up(uid int, request *request.MessageUp) (*response.Response[re
 	)
 	if request.ID >= 600000000 {
 		group := entity.Group{
-			ID: uint(request.ID),
+			Model: gorm.Model{
+				ID: uint(request.ID),
+			},
 		}
 		err = tx.First(&group).Error
 		if err != nil {
@@ -143,7 +149,9 @@ func (m *message) Up(uid int, request *request.MessageUp) (*response.Response[re
 			}
 		} else {
 			targetMsg := entity.Message{
-				ID: uint(request.MsgID),
+				Model: gorm.Model{
+					ID: uint(request.MsgID),
+				},
 			}
 			err = tx.First(&targetMsg).Error
 			if err != nil {
@@ -198,7 +206,9 @@ func (m *message) Up(uid int, request *request.MessageUp) (*response.Response[re
 			}
 		} else {
 			targetMsg := entity.Message{
-				ID: uint(request.MsgID),
+				Model: gorm.Model{
+					ID: uint(request.MsgID),
+				},
 			}
 			err = tx.First(&targetMsg).Error
 			if err != nil {
@@ -250,7 +260,9 @@ func (m *message) Down(uid int, request *request.MessageDown) (*response.Respons
 	)
 	if request.ID >= 600000000 {
 		group := entity.Group{
-			ID: uint(request.ID),
+			Model: gorm.Model{
+				ID: uint(request.ID),
+			},
 		}
 		err = tx.First(&group).Error
 		if err != nil {
@@ -283,7 +295,9 @@ func (m *message) Down(uid int, request *request.MessageDown) (*response.Respons
 			}
 		} else {
 			targetMsg := entity.Message{
-				ID: uint(request.MsgID),
+				Model: gorm.Model{
+					ID: uint(request.MsgID),
+				},
 			}
 			err = tx.First(&targetMsg).Error
 			if err != nil {
@@ -338,7 +352,9 @@ func (m *message) Down(uid int, request *request.MessageDown) (*response.Respons
 			}
 		} else {
 			targetMsg := entity.Message{
-				ID: uint(request.MsgID),
+				Model: gorm.Model{
+					ID: uint(request.MsgID),
+				},
 			}
 			err = tx.First(&targetMsg).Error
 			if err != nil {
