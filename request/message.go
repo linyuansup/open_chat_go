@@ -7,12 +7,12 @@ type MessageSend struct {
 
 type MessageUp struct {
 	ID    int `json:"id" validate:"gte=100000000,lte=999999999"`
-	MsgID int `json:"msgID" validate:"required"`
+	MsgID int `json:"msgID"`
 	Num   int `json:"num" validate:"required"`
 }
 
 type MessageDown struct {
 	ID    int `json:"id" validate:"gte=100000000,lte=999999999"`
-	MsgID int `json:"msgID" validate:"required"`
+	MsgID int `json:"msgID"`
 	Num   int `json:"num" validate:"required"`
 }
