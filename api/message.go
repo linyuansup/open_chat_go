@@ -222,7 +222,7 @@ func (m *message) Up(uid int, request *request.MessageUp) (*response.Response[re
 				tx.Rollback()
 				return nil, errcode.MessageNotBelongGroup
 			}
-			err = tx.Where("(messages.from = ? AND messages.to = ?) OR (messages.from = ? AND messages.to = ?) AND messages.created_at < ?", uid, request.ID, request.ID, uid, targetMsg.CreatedAt).Order("messages.created_at DESC").Limit(request.Num).Find(&msg).Error
+			err = tx.Where("((messages.from = ? AND messages.to = ?) OR (messages.from = ? AND messages.to = ?)) AND messages.created_at < ?", uid, request.ID, request.ID, uid, targetMsg.CreatedAt).Order("messages.created_at DESC").Limit(request.Num).Find(&msg).Error
 			if err != nil {
 				tx.Rollback()
 				return nil, errcode.FindDataError.WithDetail(err.Error())
@@ -368,7 +368,7 @@ func (m *message) Down(uid int, request *request.MessageDown) (*response.Respons
 				tx.Rollback()
 				return nil, errcode.MessageNotBelongGroup
 			}
-			err = tx.Where("(messages.from = ? AND messages.to = ?) OR (messages.from = ? AND messages.to = ?) AND messages.created_at > ?", uid, request.ID, request.ID, uid, targetMsg.CreatedAt).Order("messages.created_at ASC").Limit(request.Num).Find(&msg).Error
+			err = tx.Where("((messages.from = ? AND messages.to = ?) OR (messages.from = ? AND messages.to = ?)) AND messages.created_at > ?", uid, request.ID, request.ID, uid, targetMsg.CreatedAt).Order("messages.created_at ASC").Limit(request.Num).Find(&msg).Error
 			if err != nil {
 				tx.Rollback()
 				return nil, errcode.FindDataError.WithDetail(err.Error())
