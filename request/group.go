@@ -36,5 +36,5 @@ type GroupSetName struct {
 }
 
 type GroupMember struct {
-	ID int `json:"groupID" validate:"gte=600000000,lte=999999999"`
+	ID int `json:"id" validate:"gte=600000000,lte=999999999"`
 }
