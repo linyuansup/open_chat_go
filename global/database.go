@@ -2,6 +2,7 @@ package global
 
 import (
 	"fmt"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -18,4 +19,12 @@ func initDatabase() {
 	if err != nil {
 		panic(err)
 	}
+	db, err := Database.DB()
+	if err != nil {
+		panic(err)
+	}
+	db.SetMaxIdleConns(20)
+	db.SetMaxOpenConns(200)
+	db.SetConnMaxLifetime(time.Minute)
+	db.SetConnMaxIdleTime(time.Minute)
 }
