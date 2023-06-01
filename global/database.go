@@ -18,4 +18,10 @@ func initDatabase() {
 	if err != nil {
 		panic(err)
 	}
+	db, err := Database.DB()
+	if err != nil {
+		panic(err)
+	}
+	db.SetMaxIdleConns(20)
+	db.SetMaxOpenConns(200)
 }
