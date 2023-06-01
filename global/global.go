@@ -15,6 +15,7 @@ func Init() {
 }
 
 func StartServe() error {
+	App.Build();
 	return (&http.Server{
 		Addr:         ":" + HttpPort,
 		Handler:      App,
