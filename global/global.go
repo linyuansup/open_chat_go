@@ -1,7 +1,8 @@
 package global
 
 import (
-	"github.com/kataras/iris/v12"
+	"net/http"
+	"time"
 )
 
 func Init() {
@@ -14,6 +15,10 @@ func Init() {
 }
 
 func StartServe() error {
-	return App.Run(iris.Addr(":" + HttpPort))
+	return (&http.Server{
+		Addr:         ":" + HttpPort,
+		Handler:      App,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
+	}).ListenAndServe()
 }
-
