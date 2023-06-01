@@ -20,4 +20,7 @@ var (
 	CommitError            = NewError(10000016, "提交事务错误", 501)
 	DeleteDataError        = NewError(10000017, "删除错误", 501)
 	NoTargetFound          = NewError(10000018, "找不到对象", 501)
+	ImageDecodeError       = NewError(10000019, "图像解析失败", 501)
+	UnsupportedType        = NewError(10000020, "不支持的类型", 501)
+	ImageEncodeError       = NewError(10000021, "图像解析失败", 501)
 )

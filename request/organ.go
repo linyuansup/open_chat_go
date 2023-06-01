@@ -11,7 +11,7 @@ type OrganAvatar struct {
 type OrganSetAvatar struct {
 	ID   int    `json:"id" validate:"gte=100000000,lte=999999999"`
 	File string `json:"file" validate:"required"`
-	Ex   string `json:"ex" validate:"required"`
+	Ex   string `json:"ex" validate:"oneof=jpg jpeg png"`
 }
 
 type OrganName struct {

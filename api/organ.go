@@ -160,6 +160,11 @@ func (o *organ) Avatar(uid int, request *request.OrganAvatar) (*response.Respons
 		tx.Rollback()
 		return nil, e
 	}
+	r, e := util.Compress(file)
+	if e != nil {
+		tx.Rollback()
+		return nil, e
+	}
 	err = tx.Commit().Error
 	if err != nil {
 		tx.Rollback()
@@ -169,7 +174,7 @@ func (o *organ) Avatar(uid int, request *request.OrganAvatar) (*response.Respons
 		Code:    200,
 		Message: "获取成功",
 		Data: &response.OrganAvatar{
-			File: util.Base64Encode(file),
+			File: util.Base64Encode(r),
 			Ex:   avatarEx,
 		},
 	}, nil
