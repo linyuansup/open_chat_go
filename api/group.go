@@ -210,6 +210,7 @@ func (g *group) SetAdmin(uid int, request *request.GroupSetAdmin) (*response.Res
 	}
 	err = tx.Commit().Error
 	if err != nil {
+		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
 	return &response.Response[response.GroupSetAdmin]{
@@ -266,6 +267,7 @@ func (g *group) RemoveAdmin(uid int, request *request.GroupRemoveAdmin) (*respon
 	}
 	err = tx.Commit().Error
 	if err != nil {
+		tx.Rollback()
 		return nil, errcode.CommitError.WithDetail(err.Error())
 	}
 	return &response.Response[response.GroupRemoveAdmin]{
