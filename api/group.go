@@ -507,6 +507,11 @@ func (g *group) Member(uid int, request *request.GroupMember) (*response.Respons
 		tx.Rollback()
 		return nil, errcode.UserNotInGroup
 	}
+	err = tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.CommitError.WithDetail(err.Error())
+	}
 	return &response.Response[response.GroupMember]{
 		Code:    200,
 		Message: "获取成功",
