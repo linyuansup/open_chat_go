@@ -19,14 +19,14 @@ type GroupSetAdmin struct {
 }
 
 type GroupRemoveAdmin struct {
-	GroupID int `json:"groupID" validate:"gte=600000000,lte=999999999"`
-	UserID  int `json:"userID" validate:"gte=100000000,lte=599999999"`
+	ID     int `json:"groupID" validate:"gte=600000000,lte=999999999"`
+	UserID int `json:"userID" validate:"gte=100000000,lte=599999999"`
 }
 
 type GroupRequest struct{}
 
 type GroupDisagree struct {
-	GroupID int `json:"groupID" validate:"gte=600000000,lte=999999999"`
+	GroupID int `json:"id" validate:"gte=600000000,lte=999999999"`
 	UserID  int `json:"userID" validate:"gte=100000000,lte=599999999"`
 }
 

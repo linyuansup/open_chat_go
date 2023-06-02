@@ -224,7 +224,7 @@ func (g *group) RemoveAdmin(uid int, request *request.GroupRemoveAdmin) (*respon
 	tx := global.Database.Begin()
 	group := entity.Group{
 		Model: gorm.Model{
-			ID: uint(request.GroupID),
+			ID: uint(request.ID),
 		},
 	}
 	err := tx.First(&group).Error
@@ -241,7 +241,7 @@ func (g *group) RemoveAdmin(uid int, request *request.GroupRemoveAdmin) (*respon
 	}
 	member := entity.Member{
 		User:  request.UserID,
-		Group: request.GroupID,
+		Group: request.ID,
 	}
 	err = tx.First(&member).Error
 	if err != nil {

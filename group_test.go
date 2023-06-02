@@ -75,15 +75,15 @@ func TestGroupSetAdmin(t *testing.T) {
 
 func TestGroupRemoveAdmin(t *testing.T) {
 	_, e := api.Group.RemoveAdmin(userID, &request.GroupRemoveAdmin{
-		UserID:  userID2,
-		GroupID: groupID,
+		UserID: userID2,
+		ID:     groupID,
 	})
 	if e != nil {
 		t.Fatal("取消管理员失败：" + e.Error())
 	}
 	_, e = api.Group.RemoveAdmin(userID, &request.GroupRemoveAdmin{
-		UserID:  userID2,
-		GroupID: groupID,
+		UserID: userID2,
+		ID:     groupID,
 	})
 	if e == nil {
 		t.Fatal("重复取消管理员成功")
