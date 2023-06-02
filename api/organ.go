@@ -511,6 +511,11 @@ func (o *organ) List(uid int, request *request.OrganList) (*response.Response[re
 			Avatar: user.AvatarFileName,
 		})
 	}
+	err = tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.CommitError.WithDetail(err.Error())
+	}
 	return &response.Response[response.OrganList]{
 		Code:    200,
 		Message: "获取成功",

@@ -19,6 +19,7 @@ import (
 
 func Register[req any, res any](path string, userCheck bool, action func(uid int, request *req) (*response.Response[res], *errcode.Error)) {
 	global.App.Post(path, func(c iris.Context) {
+		tx := global.Database.Begin()
 		key := ""
 		userAgentFromClient := c.GetHeader("User-Agent")
 		if userAgentFromClient == "" {
@@ -38,9 +39,16 @@ func Register[req any, res any](path string, userCheck bool, action func(uid int
 					ID: uint(intID),
 				},
 			}
-			e := global.Database.First(&result).Error
+			e := tx.First(&result).Error
 			if e != nil {
+				tx.Rollback()
 				errorResponse(&c, errcode.NoUserFound, key)
+				return
+			}
+			e = tx.Commit().Error
+			if e != nil {
+				tx.Rollback()
+				errorResponse(&c, errcode.CommitError.WithDetail(e.Error()), key)
 				return
 			}
 			baseKey += result.Password + id + result.DeviceID
