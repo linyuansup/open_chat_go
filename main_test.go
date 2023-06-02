@@ -60,7 +60,8 @@ func TestRunner(t *testing.T) {
 		!t.Run("TestMessageDown", TestMessageDown) ||
 		!t.Run("TestOrganList", TestOrganList) ||
 		!t.Run("TestGroupMember", TestGroupMember) ||
-		!t.Run("TestOrganAvatarName", TestOrganAvatarName) {
+		!t.Run("TestOrganAvatarName", TestOrganAvatarName) ||
+		!t.Run("TestGroupT", TestGroupT) {
 		t.Fatal()
 	}
 }

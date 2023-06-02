@@ -25,3 +25,5 @@ type GroupMember struct {
 	Admin  []int `json:"admin"`
 	Member []int `json:"member"`
 }
+
+type GroupT struct{}

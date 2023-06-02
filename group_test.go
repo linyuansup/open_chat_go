@@ -132,3 +132,26 @@ func TestGroupMember(t *testing.T) {
 		t.Fatal("获取群组成员失败：" + e.Error())
 	}
 }
+
+func TestGroupT(t *testing.T) {
+	_, e := api.Organ.Join(userID2, &request.OrganJoin{
+		ID: groupID,
+	})
+	if e != nil {
+		t.Fatal("加入群组失败：" + e.Error())
+	}
+	_, e = api.Group.Agree(userID, &request.GroupAgree{
+		GroupID: groupID,
+		UserID: userID2,
+	})
+	if e != nil {
+		t.Fatal("同意失败：" + e.Error())
+	}
+	_, e = api.Group.T(userID, &request.GroupT{
+		GroupID: groupID,
+		UserID: userID2,
+	})
+	if e != nil {
+		t.Fatal("踢人失败：" + e.Error())
+	}
+}

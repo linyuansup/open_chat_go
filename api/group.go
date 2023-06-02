@@ -522,3 +522,85 @@ func (g *group) Member(uid int, request *request.GroupMember) (*response.Respons
 		},
 	}, nil
 }
+
+func (g *group) T(uid int, request *request.GroupT) (*response.Response[response.GroupT], *errcode.Error) {
+	if request.UserID == uid {
+		return nil, errcode.NoChangePermission
+	}
+	tx := global.Database.Begin()
+	group := entity.Group{
+		Model: gorm.Model{
+			ID: uint(request.GroupID),
+		},
+	}
+	err := tx.First(&group).Error
+	if err != nil {
+		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errcode.NoGroupFound
+		}
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	user := entity.User{
+		Model: gorm.Model{
+			ID: uint(request.UserID),
+		},
+	}
+	err = tx.First(&user).Error
+	if err != nil {
+		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errcode.NoUserRequestFound
+		}
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	member := entity.Member{
+		User:  request.UserID,
+		Group: request.GroupID,
+	}
+	err = tx.First(&member).Error
+	if err != nil {
+		tx.Rollback()
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errcode.UserNotInGroup
+		}
+		return nil, errcode.FindDataError.WithDetail(err.Error())
+	}
+	if group.Creator != uint(uid) {
+		requestMember := entity.Member{
+			User:  uid,
+			Group: request.GroupID,
+		}
+		err = tx.First(&requestMember).Error
+		if err != nil {
+			tx.Rollback()
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, errcode.UserNotInGroup
+			}
+			return nil, errcode.FindDataError.WithDetail(err.Error())
+		}
+		if !requestMember.Admin {
+			tx.Rollback()
+			return nil, errcode.UserIsNotAdmin
+		}
+		if member.Admin {
+			tx.Rollback()
+			return nil, errcode.NoChangePermission
+		}
+	}
+	err = tx.Delete(&member).Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.DeleteDataError.WithDetail(err.Error())
+	}
+	err = tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return nil, errcode.CommitError.WithDetail(err.Error())
+	}
+	return &response.Response[response.GroupT]{
+		Code:    200,
+		Message: "踢人成功",
+		Data:    &response.GroupT{},
+	}, nil
+}
