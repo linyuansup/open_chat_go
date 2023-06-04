@@ -128,7 +128,6 @@ func errorResponse(c *iris.Context, err *errcode.Error, key string) {
 
 func successResponse(c *iris.Context, response any, key string) {
 	marshal, err := json.Marshal(response)
-	global.Log.Info("success_response", string(marshal))
 	if err != nil {
 		errorResponse(c, errcode.JsonFormatError.WithDetail(err.Error()), key)
 		return
