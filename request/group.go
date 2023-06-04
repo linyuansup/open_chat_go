@@ -5,7 +5,7 @@ type GroupCreate struct {
 }
 
 type GroupDelete struct {
-	ID int `json:"id" validate:"gte=100000000,lte=599999999"`
+	ID int `json:"id" validate:"gte=600000000,lte=999999999"`
 }
 
 type GroupAgree struct {
