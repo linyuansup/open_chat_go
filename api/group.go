@@ -471,7 +471,7 @@ func (g *group) Member(uid int, request *request.GroupMember) (*response.Respons
 		return nil, errcode.FindDataError.WithDetail(err.Error())
 	}
 	var member []entity.Member
-	err = tx.Where(&entity.Member{Group: request.ID}).Find(&member).Error
+	err = tx.Where(&entity.Member{Group: request.ID, Grant: true}, "group", "grant").Find(&member).Error
 	if err != nil {
 		tx.Rollback()
 		return nil, errcode.FindDataError.WithDetail(err.Error())
